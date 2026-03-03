@@ -2,8 +2,8 @@
     "name": "arduino-helper",
     "displayName": "Arduino Helper",
     "description": "Arduino CLI 기반 VS Code 확장 — 컴파일, 업로드, 시리얼 모니터, 보드/라이브러리 관리",
-    "version": "0.1.0",
-    "publisher": "minseok",
+    "version": "0.1.1",
+    "publisher": "minseokk7",
     "repository": {
         "type": "git",
         "url": "https://github.com/minseokk7/arduino-helper"
@@ -76,7 +76,7 @@
                 {
                     "id": "arduino-helper",
                     "title": "Arduino Helper",
-                    "icon": "resources/icon.png"
+                    "icon": "resources/arduino-icon.svg"
                 }
             ]
         },
@@ -85,7 +85,7 @@
                 {
                     "id": "arduino-helper-view",
                     "name": "Commands",
-                    "icon": "resources/icon.png"
+                    "icon": "resources/arduino-icon.svg"
                 }
             ]
         },
