@@ -1,0 +1,22 @@
+# 의존성
+node_modules/
+
+# 빌드 출력
+dist/
+out/
+
+# 패키징 출력
+*.vsix
+
+# 로그 파일
+logs.json
+logs_utf8.json
+*.log
+
+# OS 파일
+.DS_Store
+Thumbs.db
+
+# IDE 설정
+.vscode/
+!.vscode/extensions.json

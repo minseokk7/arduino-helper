@@ -1,0 +1,152 @@
+{
+    "name": "arduino-helper",
+    "displayName": "Arduino Helper",
+    "description": "Arduino CLI 기반 VS Code 확장 — 컴파일, 업로드, 시리얼 모니터, 보드/라이브러리 관리",
+    "version": "0.1.0",
+    "publisher": "minseok",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/minseokk7/arduino-helper"
+    },
+    "engines": {
+        "vscode": "^1.85.0"
+    },
+    "categories": [
+        "Programming Languages",
+        "Other"
+    ],
+    "activationEvents": [
+        "workspaceContains:**/*.ino"
+    ],
+    "main": "./dist/extension.js",
+    "icon": "resources/icon.png",
+    "contributes": {
+        "commands": [
+            {
+                "command": "arduino.selectBoard",
+                "title": "Arduino: 보드 선택"
+            },
+            {
+                "command": "arduino.selectPort",
+                "title": "Arduino: 포트 선택"
+            },
+            {
+                "command": "arduino.compile",
+                "title": "Arduino: 컴파일 (확인)",
+                "icon": "$(check)"
+            },
+            {
+                "command": "arduino.upload",
+                "title": "Arduino: 업로드",
+                "icon": "$(arrow-right)"
+            },
+            {
+                "command": "arduino.serialMonitor",
+                "title": "Arduino: 시리얼 모니터"
+            },
+            {
+                "command": "arduino.installLibrary",
+                "title": "Arduino: 라이브러리 설치"
+            },
+            {
+                "command": "arduino.newSketch",
+                "title": "Arduino: 새 스케치"
+            },
+            {
+                "command": "arduino.installCore",
+                "title": "Arduino: 코어 설치"
+            },
+            {
+                "command": "arduino.selectBoardAndPort",
+                "title": "Arduino: 보드 및 포트 변경"
+            },
+            {
+                "command": "arduino.autoDetect",
+                "title": "Arduino: 보드/포트 자동 감지",
+                "icon": "$(zap)"
+            },
+            {
+                "command": "arduino.openExample",
+                "title": "Arduino: 예제 스케치 열기",
+                "icon": "$(file-code)"
+            }
+        ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "arduino-helper",
+                    "title": "Arduino Helper",
+                    "icon": "resources/icon.png"
+                }
+            ]
+        },
+        "views": {
+            "arduino-helper": [
+                {
+                    "id": "arduino-helper-view",
+                    "name": "Commands",
+                    "icon": "resources/icon.png"
+                }
+            ]
+        },
+        "menus": {
+            "editor/title": [
+                {
+                    "command": "arduino.compile",
+                    "when": "resourceLangId == arduino",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "arduino.upload",
+                    "when": "resourceLangId == arduino",
+                    "group": "navigation@2"
+                }
+            ]
+        },
+        "configuration": {
+            "title": "Arduino Helper",
+            "properties": {
+                "arduino.cliPath": {
+                    "type": "string",
+                    "default": "arduino-cli",
+                    "description": "arduino-cli 실행 파일 경로 (PATH에 있으면 기본값 사용)"
+                },
+                "arduino.defaultBaudRate": {
+                    "type": "number",
+                    "default": 9600,
+                    "description": "시리얼 모니터 기본 보드레이트"
+                },
+                "arduino.autoDetectBoard": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "USB 연결 시 보드 자동 감지 여부"
+                }
+            }
+        },
+        "languages": [
+            {
+                "id": "arduino",
+                "aliases": [
+                    "Arduino",
+                    "arduino"
+                ],
+                "extensions": [
+                    ".ino"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ]
+    },
+    "scripts": {
+        "compile": "node esbuild.js",
+        "watch": "node esbuild.js --watch",
+        "package": "npx @vscode/vsce package --no-dependencies",
+        "lint": "eslint src --ext ts"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.85.0",
+        "@types/node": "^20.0.0",
+        "esbuild": "^0.24.0",
+        "typescript": "^5.5.0"
+    }
+}
