@@ -2,7 +2,7 @@
     "name": "arduino-helper",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "publisher": "minseokk7",
     "repository": {
         "type": "git",
@@ -54,6 +54,16 @@
             {
                 "command": "arduino.serialMonitor",
                 "title": "%command.serialMonitor%"
+            },
+            {
+                "command": "arduino.serialPlotter",
+                "title": "%command.serialPlotter%",
+                "icon": "$(graph)"
+            },
+            {
+                "command": "arduino.managerGUI",
+                "title": "%command.managerGUI%",
+                "icon": "$(extensions)"
             },
             {
                 "command": "arduino.sendToSerial",
