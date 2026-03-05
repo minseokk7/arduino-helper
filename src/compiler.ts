@@ -115,20 +115,20 @@ export async function compile(): Promise<boolean> {
             async () => {
                 const result = await runCli(
                     ['compile', '--fqbn', state.selectedFqbn!, sketchPath],
-                    { timeout: 120_000 }
+                    {
+                        timeout: 120_000,
+                        onStdout: (data) => outputChannel.append(data),
+                        onStderr: (data) => outputChannel.append(data)
+                    }
                 );
-
-                // 출력 표시
-                if (result.stdout) {
-                    outputChannel.appendLine(result.stdout);
-                }
-                if (result.stderr) {
-                    outputChannel.appendLine(result.stderr);
-                }
 
                 if (result.exitCode === 0) {
                     outputChannel.appendLine('─'.repeat(60));
                     outputChannel.appendLine(`✅ ${vscode.l10n.t('Compile successful!')}`);
+
+                    // 컴파일 성공 시 IntelliSense 업데이트
+                    import('./intellisense').then(m => m.updateIntelliSense().catch(() => { }));
+
                     vscode.window.showInformationMessage(vscode.l10n.t('Arduino compile successful!'));
                 } else {
                     outputChannel.appendLine('─'.repeat(60));

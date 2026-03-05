@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import { runCli } from './arduino-cli';
 import { getState } from './config';
 import { compile, getOutputChannel } from './compiler';
+import { monitorTerminal, closeSerialMonitor, openSerialMonitor } from './serial-monitor';
 import * as path from 'path';
 
 /**
@@ -74,6 +75,13 @@ export async function upload(): Promise<void> {
                     vscode.l10n.t('[Upload] Port: {0} | Board: {1}', state.selectedPort!, state.selectedFqbn!)
                 );
 
+                // 업로드 전 시리얼 모니터 연결 해제 (포트 충돌 방지)
+                const wasSerialMonitorOpen = monitorTerminal !== undefined;
+                if (wasSerialMonitorOpen) {
+                    closeSerialMonitor();
+                    outputChannel.appendLine(vscode.l10n.t('Disconnected Serial Monitor for upload...'));
+                }
+
                 const result = await runCli(
                     [
                         'upload',
@@ -83,14 +91,20 @@ export async function upload(): Promise<void> {
                         state.selectedFqbn!,
                         sketchPath,
                     ],
-                    { timeout: 120_000 }
+                    {
+                        timeout: 120_000,
+                        onStdout: (data) => outputChannel.append(data),
+                        onStderr: (data) => outputChannel.append(data)
+                    }
                 );
 
-                if (result.stdout) {
-                    outputChannel.appendLine(result.stdout);
-                }
-                if (result.stderr) {
-                    outputChannel.appendLine(result.stderr);
+                // 업로드 후 시리얼 모니터 재연결
+                if (wasSerialMonitorOpen) {
+                    // 약간의 딜레이를 주어 보드가 리부팅될 시간을 확보
+                    setTimeout(() => {
+                        openSerialMonitor();
+                        outputChannel.appendLine(vscode.l10n.t('Reconnected Serial Monitor.'));
+                    }, 2000);
                 }
 
                 if (result.exitCode === 0) {

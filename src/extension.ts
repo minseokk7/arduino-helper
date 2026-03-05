@@ -7,16 +7,16 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { checkCliInstalled } from './arduino-cli';
-import { selectBoard, selectPort, selectBoardAndPort } from './board-manager';
+import { selectBoard, autoDetectBoardAndPort } from './board-manager';
 import { initCompiler, compile } from './compiler';
 import { upload } from './uploader';
-import { openSerialMonitor, closeSerialMonitor } from './serial-monitor';
+import { openSerialMonitor, closeSerialMonitor, sendDataToSerialMonitor } from './serial-monitor';
 import { installLibrary, installCore } from './library-manager';
 import { initStatusBar, updateStatusBar } from './status-bar';
-import { updateState } from './config';
-import { autoDetectBoardAndPort } from './board-manager';
+import { updateState, loadWorkspaceState, getState } from './config';
 import { ArduinoSidebarProvider } from './sidebar';
 import { openExample } from './examples-manager';
+import { installCliIfNeeded } from './auto-download';
 
 /**
  * 확장이 활성화될 때 호출됩니다.
@@ -25,20 +25,31 @@ import { openExample } from './examples-manager';
 export async function activate(
     context: vscode.ExtensionContext
 ): Promise<void> {
-    // arduino-cli 설치 확인
-    const version = await checkCliInstalled();
-    if (!version) {
-        const action = await vscode.window.showErrorMessage(
-            vscode.l10n.t('arduino-cli not found. Please install it and try again.'),
-            vscode.l10n.t('Open Installation Guide')
-        );
-        if (action === vscode.l10n.t('Open Installation Guide')) {
-            vscode.env.openExternal(
-                vscode.Uri.parse('https://arduino.github.io/arduino-cli/latest/installation/')
+    // arduino-cli 자동 다운로드 검사 및 수행
+    let cliPath = await installCliIfNeeded(context);
+
+    // 여전히 못 찾았다면, 기존 checkCliInstalled 로직으로 fallback 및 에러
+    if (!cliPath) {
+        const version = await checkCliInstalled();
+        if (!version) {
+            const action = await vscode.window.showErrorMessage(
+                vscode.l10n.t('arduino-cli not found. Please install it and try again.'),
+                vscode.l10n.t('Open Installation Guide')
             );
+            if (action === vscode.l10n.t('Open Installation Guide')) {
+                vscode.env.openExternal(
+                    vscode.Uri.parse('https://arduino.github.io/arduino-cli/latest/installation/')
+                );
+            }
+            return;
         }
-        return;
+    } else {
+        // 우리가 직접 다운로드한 로컬 바이너리가 있다면 State에 강제 세팅 (config.ts가 이를 우선하도록 설계)
+        updateState({ downloadedCliPath: cliPath });
     }
+
+    // 작업 공간 설정 로딩
+    loadWorkspaceState();
 
     // 컴파일러 및 상태바 초기화
     initCompiler(context);
@@ -60,20 +71,7 @@ export async function activate(
                     updateStatusBar();
                 },
             },
-            {
-                id: 'arduino.selectPort',
-                handler: async () => {
-                    await selectPort();
-                    updateStatusBar();
-                },
-            },
-            {
-                id: 'arduino.selectBoardAndPort',
-                handler: async () => {
-                    await selectBoardAndPort();
-                    updateStatusBar();
-                }
-            },
+
             {
                 id: 'arduino.autoDetect',
                 handler: async () => {
@@ -92,6 +90,10 @@ export async function activate(
             {
                 id: 'arduino.serialMonitor',
                 handler: openSerialMonitor,
+            },
+            {
+                id: 'arduino.sendToSerial',
+                handler: sendDataToSerialMonitor,
             },
             {
                 id: 'arduino.installLibrary',

@@ -2,7 +2,7 @@
     "name": "arduino-helper",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "0.2.0",
+    "version": "0.2.2",
     "publisher": "minseokk7",
     "repository": {
         "type": "git",
@@ -28,10 +28,6 @@
                 "title": "%command.selectBoard%"
             },
             {
-                "command": "arduino.selectPort",
-                "title": "%command.selectPort%"
-            },
-            {
                 "command": "arduino.compile",
                 "title": "%command.compile%",
                 "icon": "$(check)"
@@ -46,6 +42,10 @@
                 "title": "%command.serialMonitor%"
             },
             {
+                "command": "arduino.sendToSerial",
+                "title": "%command.sendToSerial%"
+            },
+            {
                 "command": "arduino.installLibrary",
                 "title": "%command.installLibrary%"
             },
@@ -56,10 +56,6 @@
             {
                 "command": "arduino.installCore",
                 "title": "%command.installCore%"
-            },
-            {
-                "command": "arduino.selectBoardAndPort",
-                "title": "%command.selectBoardAndPort%"
             },
             {
                 "command": "arduino.autoDetect",

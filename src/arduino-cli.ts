@@ -48,7 +48,12 @@ function resolveCliPath(cliPath: string): string {
  */
 export function runCli(
     args: string[],
-    options?: { cwd?: string; timeout?: number }
+    options?: {
+        cwd?: string;
+        timeout?: number;
+        onStdout?: (data: string) => void;
+        onStderr?: (data: string) => void;
+    }
 ): Promise<CliResult> {
     return new Promise((resolve, reject) => {
         const config = getConfig();
@@ -66,11 +71,15 @@ export function runCli(
         let stderr = '';
 
         proc.stdout.on('data', (chunk: Buffer) => {
-            stdout += chunk.toString();
+            const str = chunk.toString();
+            stdout += str;
+            options?.onStdout?.(str);
         });
 
         proc.stderr.on('data', (chunk: Buffer) => {
-            stderr += chunk.toString();
+            const str = chunk.toString();
+            stderr += str;
+            options?.onStderr?.(str);
         });
 
         // 타임아웃 처리 (기본 60초)

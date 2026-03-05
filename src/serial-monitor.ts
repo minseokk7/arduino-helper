@@ -6,8 +6,8 @@
 import * as vscode from 'vscode';
 import { getConfig, getState } from './config';
 
-/** 활성 시리얼 모니터 터미널 */
-let monitorTerminal: vscode.Terminal | undefined;
+/** 활성 시리얼 모니터 터미널 (export 하여 외부에서도 상태 확인) */
+export let monitorTerminal: vscode.Terminal | undefined;
 
 /**
  * 시리얼 모니터를 엽니다.
@@ -86,5 +86,25 @@ export function closeSerialMonitor(): void {
     if (monitorTerminal) {
         monitorTerminal.dispose();
         monitorTerminal = undefined;
+    }
+}
+
+/**
+ * 시리얼 모니터가 열려있을 때 보드로 데이터를 보냅니다 (TX).
+ */
+export async function sendDataToSerialMonitor(): Promise<void> {
+    if (!monitorTerminal) {
+        vscode.window.showWarningMessage(vscode.l10n.t('Serial Monitor is not open.'));
+        return;
+    }
+
+    const input = await vscode.window.showInputBox({
+        prompt: vscode.l10n.t('Enter text to send to the Serial Monitor'),
+        placeHolder: vscode.l10n.t('e.g.: AT, HELLO...'),
+    });
+
+    if (input !== undefined) {
+        // 터미널에 텍스트 보내기 + 엔터(CRLF)
+        monitorTerminal.sendText(input);
     }
 }

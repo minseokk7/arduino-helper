@@ -29,6 +29,7 @@
     "Compiles and uploads the sketch to the connected board.": "연결된 보드에 스케치를 컴파일 및 업로드합니다.",
     "Open Serial Monitor": "시리얼 모니터 열기",
     "Opens the serial monitor to communicate with the board.": "시리얼 모니터를 열어 보드와 통신합니다.",
+    "Send to Serial Monitor": "연결된 시리얼 모니터로 텍스트/데이터를 보냅니다.",
     "Create New Sketch": "새 스케치 생성",
     "Creates a new Arduino sketch template.": "새로운 아두이노 스케치 템플릿을 생성합니다.",
     "Install Library": "라이브러리 설치",
@@ -75,9 +76,7 @@
     "Port selected: {0}": "포트 선택됨: {0}",
     "Port selection failed: {0}": "포트 선택 실패: {0}",
     "Select an item to change or configure board/port": "변경할 항목을 선택하거나 보드/포트를 설정하세요",
-    "Select Board": "보드 선택",
     "Select the Arduino board type.": "Arduino 보드 종류를 선택합니다.",
-    "Select Port": "포트 선택",
     "Select the connected USB port.": "연결된 USB 포트를 선택합니다.",
     "Auto-detect failed: No compatible boards connected.": "자동 감지 실패: 호환되는 보드가 연결되어 있지 않습니다.",
     "Multiple boards connected. Please select manually.": "여러 개의 보드가 연결되어 있습니다. 수동으로 선택해주세요.",
@@ -132,9 +131,11 @@
     "Click to select Arduino board and port": "클릭하여 Arduino 보드 및 포트 선택",
     "Arduino: Verify (Compile)": "Arduino: 확인 (컴파일)",
     "Arduino: Upload": "Arduino: 업로드",
-    "Select Board": "보드 선택",
-    "Select Port": "포트 선택",
     "arduino-cli execution timed out ({0}s)": "arduino-cli 실행 시간 초과 ({0}초)",
     "arduino-cli execution failed: {0}\nCheck the path (Setting: arduino.cliPath)": "arduino-cli 실행 실패: {0}\n경로를 확인하세요 (설정: arduino.cliPath)",
-    "arduino-cli JSON parse failed:\nCommand: arduino-cli {0}\nOutput: {1}\nError: {2}": "arduino-cli JSON 파싱 실패:\n명령: arduino-cli {0}\n출력: {1}\n에러: {2}"
+    "arduino-cli JSON parse failed:\nCommand: arduino-cli {0}\nOutput: {1}\nError: {2}": "arduino-cli JSON 파싱 실패:\n명령: arduino-cli {0}\n출력: {1}\n에러: {2}",
+    "Downloading Arduino CLI...": "Arduino CLI 다운로드 중...",
+    "Extracting...": "압축 해제 중...",
+    "Arduino CLI successfully installed!": "Arduino CLI 설치 완료!",
+    "Failed to download Arduino CLI: {0}": "Arduino CLI 다운로드 실패: {0}"
 }

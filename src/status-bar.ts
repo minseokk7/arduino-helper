@@ -9,6 +9,7 @@ import { getState } from './config';
 
 /** 통합 상태바 아이템 */
 let configurationStatusBarItem: vscode.StatusBarItem;
+let autoDetectStatusBarItem: vscode.StatusBarItem;
 let compileStatusBarItem: vscode.StatusBarItem;
 let uploadStatusBarItem: vscode.StatusBarItem;
 
@@ -22,14 +23,25 @@ export function initStatusBar(context: vscode.ExtensionContext): void {
         vscode.StatusBarAlignment.Left,
         100
     );
-    configurationStatusBarItem.command = 'arduino.selectBoardAndPort';
-    configurationStatusBarItem.tooltip = vscode.l10n.t('Click to select Arduino board and port');
+    configurationStatusBarItem.command = 'arduino.selectBoard';
+    configurationStatusBarItem.tooltip = vscode.l10n.t('Click to select Arduino board');
     context.subscriptions.push(configurationStatusBarItem);
 
-    // 컴파일 상태바 (우선순위: 99)
-    compileStatusBarItem = vscode.window.createStatusBarItem(
+    // 자동감지 상태바 (우선순위: 99 → 보드 선택 우측)
+    autoDetectStatusBarItem = vscode.window.createStatusBarItem(
         vscode.StatusBarAlignment.Left,
         99
+    );
+    autoDetectStatusBarItem.command = 'arduino.autoDetect';
+    autoDetectStatusBarItem.text = '$(zap)';
+    autoDetectStatusBarItem.tooltip = vscode.l10n.t('Auto Detect Board & Port');
+    autoDetectStatusBarItem.show();
+    context.subscriptions.push(autoDetectStatusBarItem);
+
+    // 컴파일 상태바 (우선순위: 98)
+    compileStatusBarItem = vscode.window.createStatusBarItem(
+        vscode.StatusBarAlignment.Left,
+        98
     );
     compileStatusBarItem.command = 'arduino.compile';
     compileStatusBarItem.text = '$(check)';
@@ -37,10 +49,10 @@ export function initStatusBar(context: vscode.ExtensionContext): void {
     compileStatusBarItem.show();
     context.subscriptions.push(compileStatusBarItem);
 
-    // 업로드 상태바 (우선순위: 98)
+    // 업로드 상태바 (우선순위: 97)
     uploadStatusBarItem = vscode.window.createStatusBarItem(
         vscode.StatusBarAlignment.Left,
-        98
+        97
     );
     uploadStatusBarItem.command = 'arduino.upload';
     uploadStatusBarItem.text = '$(arrow-right)';
