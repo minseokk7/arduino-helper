@@ -42,11 +42,10 @@ export function openManagerGUI(context: vscode.ExtensionContext): void {
     currentPanel.webview.onDidReceiveMessage(
         async (message) => {
             switch (message.command) {
-                case 'searchLibrary':
-                    await handleSearch('lib', message.query);
-                    break;
-                case 'searchCore':
-                    await handleSearch('core', message.query);
+                case 'webviewReady':
+                    // 초기에 전체 데이터를 백그라운드에서 로딩
+                    handleSearch('lib', '').catch(console.error);
+                    handleSearch('core', '').catch(console.error);
                     break;
                 case 'install':
                     await handleInstall(message.type, message.id);
@@ -65,8 +64,12 @@ async function handleSearch(type: 'lib' | 'core', query: string) {
     if (!currentPanel) return;
 
     try {
-        // arduino-cli lib search <query> --format json
-        const result = await runCliJson<any>([type, 'search', query]);
+        // arduino-cli lib search [query] --format json
+        const args = [type, 'search'];
+        if (query) {
+            args.push(query);
+        }
+        const result = await runCliJson<any>(args);
 
         let items: any[] = [];
         if (type === 'lib' && result.data && result.data.libraries) {
@@ -172,30 +175,51 @@ function getWebviewContent(): string {
         const vscode = acquireVsCodeApi();
         
         const searchInput = document.getElementById('searchInput');
-        const searchBtn = document.getElementById('searchBtn');
         const searchType = document.getElementById('searchType');
         const resultsList = document.getElementById('resultsList');
         const loader = document.getElementById('loader');
         const statusMsg = document.getElementById('statusMsg');
 
-        // 검색 트리거
-        function doSearch() {
-            const query = searchInput.value.trim();
-            if (!query) return;
-            
-            resultsList.innerHTML = '';
-            statusMsg.style.display = 'none';
-            loader.style.display = 'block';
+        let allData = { lib: [], core: [] };
+        let isLoaded = { lib: false, core: false };
 
-            vscode.postMessage({
-                command: searchType.value === 'lib' ? 'searchLibrary' : 'searchCore',
-                query: query
-            });
+        // 로컬 자바스크립트 필터링
+        function applyLocalFilter() {
+            const query = searchInput.value.trim().toLowerCase();
+            const type = searchType.value;
+            const data = allData[type];
+            
+            if (!isLoaded[type]) {
+                resultsList.innerHTML = '';
+                loader.style.display = 'block';
+                statusMsg.textContent = 'Downloading registry metadata... (This might take a minute initially)';
+                statusMsg.style.display = 'block';
+                return;
+            }
+            
+            const filtered = query ? data.filter(item => {
+                let name = '';
+                let desc = '';
+                if (type === 'lib') {
+                    name = (item.name || '').toLowerCase();
+                    const release = item.releases[item.releases.length - 1];
+                    desc = ((release.sentence || '') + ' ' + (release.paragraph || '')).toLowerCase();
+                } else {
+                    name = (item.name || '').toLowerCase();
+                    desc = ((item.architecture || '') + ' ' + (item.id || '')).toLowerCase();
+                }
+                return name.includes(query) || (desc && desc.includes(query));
+            }) : data;
+
+            renderResults(filtered, type);
         }
 
-        searchBtn.addEventListener('click', doSearch);
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') doSearch();
+        searchInput.addEventListener('input', applyLocalFilter);
+        searchType.addEventListener('change', applyLocalFilter);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            vscode.postMessage({ command: 'webviewReady' });
+            applyLocalFilter(); // 로딩 UI 표시
         });
 
         // 결과 렌더링
@@ -208,17 +232,22 @@ function getWebviewContent(): string {
                 statusMsg.style.display = 'block';
                 return;
             }
+            statusMsg.style.display = 'none';
 
-            results.forEach(item => {
+            // DOM 과부하 방지를 위한 최대 렌더링 수치 100개
+            const MAX_RENDER = 100;
+            const renderCount = Math.min(results.length, MAX_RENDER);
+            
+            for (let i = 0; i < renderCount; i++) {
+                const item = results[i];
                 let id = '';
                 let name = '';
                 let author = '';
                 let desc = '';
                 let version = '';
 
-                // 라이브러리와 코어의 JSON 필드가 약간 다름
                 if (type === 'lib') {
-                    const release = item.releases[item.releases.length - 1]; // 마지막 릴리즈
+                    const release = item.releases[item.releases.length - 1];
                     id = item.name;
                     name = item.name;
                     author = release.author || '';
@@ -249,7 +278,15 @@ function getWebviewContent(): string {
                     </div>
                 \`;
                 resultsList.appendChild(card);
-            });
+            }
+
+            if (results.length > MAX_RENDER) {
+                const more = document.createElement('div');
+                more.className = 'status-msg';
+                more.style.display = 'block';
+                more.textContent = \`Showing \${MAX_RENDER} of \${results.length} results. Keep typing to filter more.\`;
+                resultsList.appendChild(more);
+            }
 
             // 설치 버튼 이벤트 바인딩
             document.querySelectorAll('.install-btn').forEach(btn => {
@@ -272,7 +309,11 @@ function getWebviewContent(): string {
             const msg = event.data;
             switch(msg.command) {
                 case 'searchResults':
-                    renderResults(msg.results, msg.type);
+                    allData[msg.type] = msg.results || [];
+                    isLoaded[msg.type] = true;
+                    if (searchType.value === msg.type) {
+                        applyLocalFilter(); // 즉각 DOM 업데이트
+                    }
                     break;
                 case 'searchError':
                     loader.style.display = 'none';
