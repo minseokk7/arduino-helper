@@ -2,7 +2,7 @@
     "name": "arduino-helper",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "0.2.2",
+    "version": "0.3.0",
     "publisher": "minseokk7",
     "repository": {
         "type": "git",
@@ -22,6 +22,20 @@
     "main": "./dist/extension.js",
     "icon": "resources/icon.png",
     "contributes": {
+        "snippets": [
+            {
+                "language": "cpp",
+                "path": "./snippets/arduino.json"
+            },
+            {
+                "language": "c",
+                "path": "./snippets/arduino.json"
+            },
+            {
+                "language": "arduino",
+                "path": "./snippets/arduino.json"
+            }
+        ],
         "commands": [
             {
                 "command": "arduino.selectBoard",
@@ -44,6 +58,11 @@
             {
                 "command": "arduino.sendToSerial",
                 "title": "%command.sendToSerial%"
+            },
+            {
+                "command": "arduino.generateDebugConfig",
+                "title": "%command.generateDebugConfig%",
+                "icon": "$(debug-alt)"
             },
             {
                 "command": "arduino.installLibrary",
@@ -141,8 +160,8 @@
         "lint": "eslint src --ext ts"
     },
     "devDependencies": {
-        "@types/vscode": "^1.85.0",
         "@types/node": "^20.0.0",
+        "@types/vscode": "^1.85.0",
         "esbuild": "^0.24.0",
         "typescript": "^5.5.0"
     }

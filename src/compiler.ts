@@ -113,8 +113,15 @@ export async function compile(): Promise<boolean> {
                 cancellable: false,
             },
             async () => {
+                // Clangd 지원 및 빠른 빌드를 위해 컴파일 결과물을 .vscode/build 에 저장합니다.
+                const wFolders = vscode.workspace.workspaceFolders;
+                const workspacePath = wFolders && wFolders.length > 0 ? wFolders[0].uri.fsPath : sketchPath;
+                const buildPath = path.join(workspacePath, '.vscode', 'build');
+
+                const args = ['compile', '--fqbn', state.selectedFqbn!, '--dump-profile', '--build-path', buildPath, sketchPath];
+
                 const result = await runCli(
-                    ['compile', '--fqbn', state.selectedFqbn!, sketchPath],
+                    args,
                     {
                         timeout: 120_000,
                         onStdout: (data) => outputChannel.append(data),

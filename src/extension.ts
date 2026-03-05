@@ -17,6 +17,10 @@ import { updateState, loadWorkspaceState, getState } from './config';
 import { ArduinoSidebarProvider } from './sidebar';
 import { openExample } from './examples-manager';
 import { installCliIfNeeded } from './auto-download';
+import { ArduinoTaskProvider } from './task-provider';
+import { openSerialPlotter } from './webviews/serial-plotter';
+import { openManagerGUI } from './webviews/manager-gui';
+import { generateDebugConfig } from './debugger';
 
 /**
  * 확장이 활성화될 때 호출됩니다.
@@ -59,6 +63,13 @@ export async function activate(
     const sidebarProvider = new ArduinoSidebarProvider();
     vscode.window.registerTreeDataProvider('arduino-helper-view', sidebarProvider);
 
+    // 태스크 제공자(TaskProvider) 등록 (Ctrl+Shift+B 연동)
+    const taskProvider = vscode.tasks.registerTaskProvider(
+        ArduinoTaskProvider.ArduinoType,
+        new ArduinoTaskProvider()
+    );
+    context.subscriptions.push(taskProvider);
+
     // 명령어 등록
     const commands: Array<{
         id: string;
@@ -88,12 +99,24 @@ export async function activate(
                 handler: upload,
             },
             {
-                id: 'arduino.serialMonitor',
-                handler: openSerialMonitor,
+                "id": "arduino.serialMonitor",
+                "handler": openSerialMonitor,
             },
             {
-                id: 'arduino.sendToSerial',
+                "id": "arduino.serialPlotter",
+                "handler": () => openSerialPlotter(context),
+            },
+            {
+                "id": "arduino.managerGUI",
+                "handler": () => openManagerGUI(context),
+            },
+            {
+                "id": "arduino.sendToSerial",
                 handler: sendDataToSerialMonitor,
+            },
+            {
+                "id": "arduino.generateDebugConfig",
+                "handler": generateDebugConfig,
             },
             {
                 id: 'arduino.installLibrary',
