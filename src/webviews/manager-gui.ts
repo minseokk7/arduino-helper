@@ -81,8 +81,15 @@ async function handleSearch(type: 'lib' | 'core', query: string) {
 
         // 알파벳순(이름순) 정렬
         items.sort((a, b) => {
-            const nameA = (a.name || '').toLowerCase();
-            const nameB = (b.name || '').toLowerCase();
+            let nameA = (a.name || '').toLowerCase();
+            let nameB = (b.name || '').toLowerCase();
+            // 코어는 name이 releases 안에 있음
+            if (type === 'core') {
+                const relA = a.releases?.[a.latest_version];
+                const relB = b.releases?.[b.latest_version];
+                nameA = (relA?.name || a.id || '').toLowerCase();
+                nameB = (relB?.name || b.id || '').toLowerCase();
+            }
             return nameA.localeCompare(nameB);
         });
 
@@ -213,8 +220,10 @@ function getWebviewContent(): string {
                     const release = item.releases[item.releases.length - 1];
                     desc = ((release.sentence || '') + ' ' + (release.paragraph || '')).toLowerCase();
                 } else {
-                    name = (item.name || '').toLowerCase();
-                    desc = ((item.architecture || '') + ' ' + (item.id || '')).toLowerCase();
+                    // 코어: name은 releases[latest_version] 안에 있음
+                    const rel = item.releases && item.latest_version ? item.releases[item.latest_version] : null;
+                    name = ((rel && rel.name) || item.id || '').toLowerCase();
+                    desc = ((item.id || '') + ' ' + (item.maintainer || '')).toLowerCase();
                 }
                 return name.includes(query) || (desc && desc.includes(query));
             }) : data;
@@ -261,10 +270,12 @@ function getWebviewContent(): string {
                     desc = release.sentence || release.paragraph || '';
                     version = release.version || '';
                 } else if (type === 'core') {
+                    // 코어: name은 releases[latest_version] 안에 있음
+                    const rel = item.releases && item.latest_version ? item.releases[item.latest_version] : null;
                     id = item.id;
-                    name = item.name;
+                    name = (rel && rel.name) || item.id;
                     author = item.maintainer || '';
-                    desc = item.architecture || item.id;
+                    desc = item.id;
                     version = item.latest_version || '';
                 }
 
