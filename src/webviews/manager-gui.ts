@@ -217,10 +217,9 @@ function getWebviewContent(): string {
         searchInput.addEventListener('input', applyLocalFilter);
         searchType.addEventListener('change', applyLocalFilter);
 
-        window.addEventListener('DOMContentLoaded', () => {
-            vscode.postMessage({ command: 'webviewReady' });
-            applyLocalFilter(); // 로딩 UI 표시
-        });
+        // VS Code Webview에서는 인라인 스크립트 실행 시점에 DOM이 이미 준비됨
+        vscode.postMessage({ command: 'webviewReady' });
+        applyLocalFilter(); // 로딩 UI 표시
 
         // 결과 렌더링
         function renderResults(results, type) {
