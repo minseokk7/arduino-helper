@@ -69,7 +69,8 @@ async function handleSearch(type: 'lib' | 'core', query: string) {
         if (query) {
             args.push(query);
         }
-        const result = await runCliJson<any>(args);
+        // 전체 레지스트리 로딩은 시간이 오래 걸릴 수 있으므로 타임아웃 180초
+        const result = await runCliJson<any>(args, { timeout: 180000 });
 
         let items: any[] = [];
         if (type === 'lib' && result.data && result.data.libraries) {
@@ -77,6 +78,13 @@ async function handleSearch(type: 'lib' | 'core', query: string) {
         } else if (type === 'core' && result.data && result.data.platforms) {
             items = result.data.platforms;
         }
+
+        // 알파벳순(이름순) 정렬
+        items.sort((a, b) => {
+            const nameA = (a.name || '').toLowerCase();
+            const nameB = (b.name || '').toLowerCase();
+            return nameA.localeCompare(nameB);
+        });
 
         currentPanel.webview.postMessage({
             command: 'searchResults',
