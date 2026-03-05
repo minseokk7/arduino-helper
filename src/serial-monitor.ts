@@ -19,10 +19,10 @@ export async function openSerialMonitor(): Promise<void> {
 
     if (!state.selectedPort) {
         const action = await vscode.window.showWarningMessage(
-            '포트가 선택되지 않았습니다.',
-            '포트 선택'
+            vscode.l10n.t('No port selected.'),
+            vscode.l10n.t('Select Port')
         );
-        if (action === '포트 선택') {
+        if (action === vscode.l10n.t('Select Port')) {
             await vscode.commands.executeCommand('arduino.selectPort');
         }
         return;
@@ -41,7 +41,7 @@ export async function openSerialMonitor(): Promise<void> {
     ];
 
     const selectedBaud = await vscode.window.showQuickPick(baudRates, {
-        placeHolder: `보드레이트 선택 (기본: ${config.defaultBaudRate})`,
+        placeHolder: vscode.l10n.t('Select baud rate (default: {0})', config.defaultBaudRate),
     });
 
     const baudRate = selectedBaud
@@ -57,7 +57,7 @@ export async function openSerialMonitor(): Promise<void> {
     // 새 터미널에서 시리얼 모니터 실행
     const cliPath = config.cliPath;
     monitorTerminal = vscode.window.createTerminal({
-        name: `시리얼 모니터 (${state.selectedPort})`,
+        name: vscode.l10n.t('Serial Monitor ({0})', state.selectedPort!),
         shellPath: cliPath,
         shellArgs: [
             'monitor',

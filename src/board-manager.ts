@@ -45,8 +45,8 @@ export async function getConnectedBoards(): Promise<DetectedPort[]> {
         return result.data.detected_ports ?? [];
     } catch (error) {
         const message =
-            error instanceof Error ? error.message : '알 수 없는 오류';
-        vscode.window.showErrorMessage(`보드 목록 가져오기 실패: ${message}`);
+            error instanceof Error ? error.message : vscode.l10n.t('Unknown error');
+        vscode.window.showErrorMessage(vscode.l10n.t('Failed to get board list: {0}', message));
         return [];
     }
 }
@@ -64,8 +64,8 @@ export async function getAllBoards(): Promise<BoardListAllItem[]> {
         return result.data.boards ?? [];
     } catch (error) {
         const message =
-            error instanceof Error ? error.message : '알 수 없는 오류';
-        vscode.window.showErrorMessage(`보드 전체 목록 가져오기 실패: ${message}`);
+            error instanceof Error ? error.message : vscode.l10n.t('Unknown error');
+        vscode.window.showErrorMessage(vscode.l10n.t('Failed to get all boards: {0}', message));
         return [];
     }
 }
@@ -76,7 +76,7 @@ export async function getAllBoards(): Promise<BoardListAllItem[]> {
  */
 export async function selectBoard(): Promise<void> {
     const quickPick = vscode.window.createQuickPick();
-    quickPick.placeholder = '보드를 선택하세요 (검색 가능)';
+    quickPick.placeholder = vscode.l10n.t('Select a board (searchable)');
     quickPick.busy = true;
     quickPick.show();
 
@@ -96,7 +96,7 @@ export async function selectBoard(): Promise<void> {
 
         if (connectedBoards.length > 0) {
             items.push({
-                label: '$(plug) 연결된 보드',
+                label: `$(plug) ${vscode.l10n.t('Connected Boards')}`,
                 kind: vscode.QuickPickItemKind.Separator,
             });
             for (const port of connectedBoards) {
@@ -104,7 +104,7 @@ export async function selectBoard(): Promise<void> {
                     items.push({
                         label: `$(circuit-board) ${board.name}`,
                         description: board.fqbn,
-                        detail: `포트: ${port.port.address}`,
+                        detail: vscode.l10n.t('Port: {0}', port.port.address),
                     });
                 }
             }
@@ -113,14 +113,14 @@ export async function selectBoard(): Promise<void> {
         // 전체 보드 목록
         if (allBoards.length > 0) {
             items.push({
-                label: '$(list-unordered) 모든 보드',
+                label: `$(list-unordered) ${vscode.l10n.t('All Boards')}`,
                 kind: vscode.QuickPickItemKind.Separator,
             });
             for (const board of allBoards) {
                 items.push({
                     label: `$(circuit-board) ${board.name}`,
                     description: board.fqbn,
-                    detail: `플랫폼: ${board.platform.name}`,
+                    detail: vscode.l10n.t('Platform: {0}', board.platform.name),
                 });
             }
         }
@@ -136,7 +136,7 @@ export async function selectBoard(): Promise<void> {
                     selectedBoardName: selected.label.replace('$(circuit-board) ', ''),
                 });
                 vscode.window.showInformationMessage(
-                    `보드 선택됨: ${selected.label.replace('$(circuit-board) ', '')} (${selected.description})`
+                    vscode.l10n.t('Board selected: {0} ({1})', selected.label.replace('$(circuit-board) ', ''), selected.description)
                 );
             }
             quickPick.dispose();
@@ -146,8 +146,8 @@ export async function selectBoard(): Promise<void> {
     } catch (error) {
         quickPick.dispose();
         const message =
-            error instanceof Error ? error.message : '알 수 없는 오류';
-        vscode.window.showErrorMessage(`보드 선택 실패: ${message}`);
+            error instanceof Error ? error.message : vscode.l10n.t('Unknown error');
+        vscode.window.showErrorMessage(vscode.l10n.t('Board selection failed: {0}', message));
     }
 }
 
@@ -156,7 +156,7 @@ export async function selectBoard(): Promise<void> {
  */
 export async function selectPort(): Promise<void> {
     const quickPick = vscode.window.createQuickPick();
-    quickPick.placeholder = '포트를 선택하세요';
+    quickPick.placeholder = vscode.l10n.t('Select a port');
     quickPick.busy = true;
     quickPick.show();
 
@@ -165,18 +165,18 @@ export async function selectPort(): Promise<void> {
 
         const items: vscode.QuickPickItem[] = connectedPorts.map((port) => {
             const boardName =
-                port.matching_boards?.[0]?.name ?? '알 수 없는 보드';
+                port.matching_boards?.[0]?.name ?? vscode.l10n.t('Unknown board');
             return {
                 label: `$(plug) ${port.port.address}`,
                 description: port.port.label,
-                detail: `보드: ${boardName} | 프로토콜: ${port.port.protocol_label}`,
+                detail: vscode.l10n.t('Board: {0} | Protocol: {1}', boardName, port.port.protocol_label),
             };
         });
 
         if (items.length === 0) {
             quickPick.dispose();
             vscode.window.showWarningMessage(
-                '연결된 보드가 없습니다. USB 케이블을 확인하세요.'
+                vscode.l10n.t('No boards connected. Check the USB cable.')
             );
             return;
         }
@@ -190,7 +190,7 @@ export async function selectPort(): Promise<void> {
                 const portAddress = selected.label.replace('$(plug) ', '');
                 updateState({ selectedPort: portAddress });
                 vscode.window.showInformationMessage(
-                    `포트 선택됨: ${portAddress}`
+                    vscode.l10n.t('Port selected: {0}', portAddress)
                 );
             }
             quickPick.dispose();
@@ -200,8 +200,8 @@ export async function selectPort(): Promise<void> {
     } catch (error) {
         quickPick.dispose();
         const message =
-            error instanceof Error ? error.message : '알 수 없는 오류';
-        vscode.window.showErrorMessage(`포트 선택 실패: ${message}`);
+            error instanceof Error ? error.message : vscode.l10n.t('Unknown error');
+        vscode.window.showErrorMessage(vscode.l10n.t('Port selection failed: {0}', message));
     }
 }
 
@@ -210,10 +210,10 @@ export async function selectPort(): Promise<void> {
  */
 export async function selectBoardAndPort(): Promise<void> {
     const quickPick = vscode.window.createQuickPick();
-    quickPick.placeholder = '변경할 항목을 선택하거나 보드/포트를 설정하세요';
+    quickPick.placeholder = vscode.l10n.t('Select an item to change or configure board/port');
     quickPick.items = [
-        { label: '$(circuit-board) 보드 선택', description: 'Arduino 보드 종류를 선택합니다.' },
-        { label: '$(plug) 포트 선택', description: '연결된 USB 포트를 선택합니다.' }
+        { label: `$(circuit-board) ${vscode.l10n.t('Select Board')}`, description: vscode.l10n.t('Select the Arduino board type.') },
+        { label: `$(plug) ${vscode.l10n.t('Select Port')}`, description: vscode.l10n.t('Select the connected USB port.') }
     ];
 
     quickPick.show();
@@ -222,13 +222,11 @@ export async function selectBoardAndPort(): Promise<void> {
         const selected = quickPick.selectedItems[0];
         quickPick.dispose();
 
-        if (selected.label.includes('보드')) {
+        if (selected.label.includes(vscode.l10n.t('Select Board'))) {
             await selectBoard();
-        } else if (selected.label.includes('포트')) {
+        } else if (selected.label.includes(vscode.l10n.t('Select Port'))) {
             await selectPort();
         }
-
-        // 상태바 업데이트를 위해 (호출하는 extension.ts에서 수행하도록 할 수 있으나, 일단 여기서는 선택만 진행)
     });
 
     quickPick.onDidHide(() => quickPick.dispose());
@@ -247,12 +245,12 @@ export async function autoDetectBoardAndPort(): Promise<void> {
         );
 
         if (validPorts.length === 0) {
-            vscode.window.showWarningMessage('자동 감지 실패: 호환되는 보드가 연결되어 있지 않습니다.');
+            vscode.window.showWarningMessage(vscode.l10n.t('Auto-detect failed: No compatible boards connected.'));
             return;
         }
 
         if (validPorts.length > 1) {
-            vscode.window.showInformationMessage('여러 개의 보드가 연결되어 있습니다. 수동으로 선택해주세요.');
+            vscode.window.showInformationMessage(vscode.l10n.t('Multiple boards connected. Please select manually.'));
             await selectBoardAndPort();
             return;
         }
@@ -268,10 +266,10 @@ export async function autoDetectBoardAndPort(): Promise<void> {
         });
 
         vscode.window.showInformationMessage(
-            `자동 감지 완료: ${board.name} (${port.port.address})`
+            vscode.l10n.t('Auto-detect complete: {0} ({1})', board.name, port.port.address)
         );
     } catch (error) {
-        const message = error instanceof Error ? error.message : '알 수 없는 오류';
-        vscode.window.showErrorMessage(`자동 감지 중 오류 발생: ${message}`);
+        const message = error instanceof Error ? error.message : vscode.l10n.t('Unknown error');
+        vscode.window.showErrorMessage(vscode.l10n.t('Error during auto-detection: {0}', message));
     }
 }

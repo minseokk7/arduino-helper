@@ -76,10 +76,10 @@ export async function compile(): Promise<boolean> {
 
     if (!state.selectedFqbn) {
         const action = await vscode.window.showWarningMessage(
-            '보드가 선택되지 않았습니다.',
-            '보드 선택'
+            vscode.l10n.t('No board selected.'),
+            vscode.l10n.t('Select Board')
         );
-        if (action === '보드 선택') {
+        if (action === vscode.l10n.t('Select Board')) {
             await vscode.commands.executeCommand('arduino.selectBoard');
         }
         return false;
@@ -89,7 +89,7 @@ export async function compile(): Promise<boolean> {
     const sketchPath = getSketchPath();
     if (!sketchPath) {
         vscode.window.showErrorMessage(
-            '.ino 파일이 포함된 폴더를 열어주세요.'
+            vscode.l10n.t('Please open a folder containing a .ino file.')
         );
         return false;
     }
@@ -100,16 +100,16 @@ export async function compile(): Promise<boolean> {
     outputChannel.clear();
     outputChannel.show(true);
     outputChannel.appendLine(
-        `[컴파일 시작] 보드: ${state.selectedBoardName} (${state.selectedFqbn})`
+        vscode.l10n.t('[Compile Start] Board: {0} ({1})', state.selectedBoardName!, state.selectedFqbn)
     );
-    outputChannel.appendLine(`[스케치 경로] ${sketchPath}`);
+    outputChannel.appendLine(vscode.l10n.t('[Sketch Path] {0}', sketchPath));
     outputChannel.appendLine('─'.repeat(60));
 
     try {
         await vscode.window.withProgress(
             {
                 location: vscode.ProgressLocation.Notification,
-                title: 'Arduino 컴파일 중...',
+                title: vscode.l10n.t('Compiling Arduino...'),
                 cancellable: false,
             },
             async () => {
@@ -128,11 +128,11 @@ export async function compile(): Promise<boolean> {
 
                 if (result.exitCode === 0) {
                     outputChannel.appendLine('─'.repeat(60));
-                    outputChannel.appendLine('✅ 컴파일 성공!');
-                    vscode.window.showInformationMessage('Arduino 컴파일 성공!');
+                    outputChannel.appendLine(`✅ ${vscode.l10n.t('Compile successful!')}`);
+                    vscode.window.showInformationMessage(vscode.l10n.t('Arduino compile successful!'));
                 } else {
                     outputChannel.appendLine('─'.repeat(60));
-                    outputChannel.appendLine('❌ 컴파일 실패');
+                    outputChannel.appendLine(`❌ ${vscode.l10n.t('Compile failed')}`);
 
                     // 에러 파싱 및 Diagnostics 등록
                     const fullOutput = `${result.stdout}\n${result.stderr}`;
@@ -143,7 +143,7 @@ export async function compile(): Promise<boolean> {
                         diagnosticCollection.set(uri, diagnostics);
                     }
 
-                    vscode.window.showErrorMessage('Arduino 컴파일 실패. 출력 채널을 확인하세요.');
+                    vscode.window.showErrorMessage(vscode.l10n.t('Arduino compile failed. Check the output channel.'));
                 }
 
                 return result.exitCode === 0;
@@ -152,9 +152,9 @@ export async function compile(): Promise<boolean> {
         return true;
     } catch (error) {
         const message =
-            error instanceof Error ? error.message : '알 수 없는 오류';
-        outputChannel.appendLine(`오류: ${message}`);
-        vscode.window.showErrorMessage(`컴파일 오류: ${message}`);
+            error instanceof Error ? error.message : vscode.l10n.t('Unknown error');
+        outputChannel.appendLine(vscode.l10n.t('Error: {0}', message));
+        vscode.window.showErrorMessage(vscode.l10n.t('Compile error: {0}', message));
         return false;
     }
 }

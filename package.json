@@ -1,8 +1,8 @@
 {
     "name": "arduino-helper",
-    "displayName": "Arduino Helper",
-    "description": "Arduino CLI 기반 VS Code 확장 — 컴파일, 업로드, 시리얼 모니터, 보드/라이브러리 관리",
-    "version": "0.1.1",
+    "displayName": "%displayName%",
+    "description": "%description%",
+    "version": "0.2.0",
     "publisher": "minseokk7",
     "repository": {
         "type": "git",
@@ -11,6 +11,7 @@
     "engines": {
         "vscode": "^1.85.0"
     },
+    "l10n": "./l10n",
     "categories": [
         "Programming Languages",
         "Other"
@@ -24,50 +25,50 @@
         "commands": [
             {
                 "command": "arduino.selectBoard",
-                "title": "Arduino: 보드 선택"
+                "title": "%command.selectBoard%"
             },
             {
                 "command": "arduino.selectPort",
-                "title": "Arduino: 포트 선택"
+                "title": "%command.selectPort%"
             },
             {
                 "command": "arduino.compile",
-                "title": "Arduino: 컴파일 (확인)",
+                "title": "%command.compile%",
                 "icon": "$(check)"
             },
             {
                 "command": "arduino.upload",
-                "title": "Arduino: 업로드",
+                "title": "%command.upload%",
                 "icon": "$(arrow-right)"
             },
             {
                 "command": "arduino.serialMonitor",
-                "title": "Arduino: 시리얼 모니터"
+                "title": "%command.serialMonitor%"
             },
             {
                 "command": "arduino.installLibrary",
-                "title": "Arduino: 라이브러리 설치"
+                "title": "%command.installLibrary%"
             },
             {
                 "command": "arduino.newSketch",
-                "title": "Arduino: 새 스케치"
+                "title": "%command.newSketch%"
             },
             {
                 "command": "arduino.installCore",
-                "title": "Arduino: 코어 설치"
+                "title": "%command.installCore%"
             },
             {
                 "command": "arduino.selectBoardAndPort",
-                "title": "Arduino: 보드 및 포트 변경"
+                "title": "%command.selectBoardAndPort%"
             },
             {
                 "command": "arduino.autoDetect",
-                "title": "Arduino: 보드/포트 자동 감지",
+                "title": "%command.autoDetect%",
                 "icon": "$(zap)"
             },
             {
                 "command": "arduino.openExample",
-                "title": "Arduino: 예제 스케치 열기",
+                "title": "%command.openExample%",
                 "icon": "$(file-code)"
             }
         ],
@@ -109,17 +110,17 @@
                 "arduino.cliPath": {
                     "type": "string",
                     "default": "arduino-cli",
-                    "description": "arduino-cli 실행 파일 경로 (PATH에 있으면 기본값 사용)"
+                    "description": "%config.cliPath.description%"
                 },
                 "arduino.defaultBaudRate": {
                     "type": "number",
                     "default": 9600,
-                    "description": "시리얼 모니터 기본 보드레이트"
+                    "description": "%config.defaultBaudRate.description%"
                 },
                 "arduino.autoDetectBoard": {
                     "type": "boolean",
                     "default": true,
-                    "description": "USB 연결 시 보드 자동 감지 여부"
+                    "description": "%config.autoDetectBoard.description%"
                 }
             }
         },

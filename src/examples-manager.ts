@@ -36,7 +36,6 @@ export async function getExamples(): Promise<LibraryExample[]> {
         }
     } catch (error) {
         // CLI 에러는 그냥 무시하고 경고만 로그로 남깁니다.
-        console.warn('예제 목록 가져오기 실패:', error);
     }
 
     // 2. Arduino IDE 내장 예제(Built-in Examples) 가져오기
@@ -66,8 +65,8 @@ export async function getExamples(): Promise<LibraryExample[]> {
 
             examplesData = builtinLibs.concat(examplesData);
         }
-    } catch (error) {
-        console.warn('내장 예제 폴더 읽기 실패:', error);
+    } catch {
+        // 내장 예제 폴더 읽기 실패 시 무시
     }
 
     return examplesData;
@@ -96,7 +95,7 @@ interface LibraryQuickPickItem extends vscode.QuickPickItem {
 export async function openExample(): Promise<void> {
     // --- 1단계: 라이브러리/코어 목록 ---
     const step1 = vscode.window.createQuickPick();
-    step1.placeholder = '라이브러리 또는 코어를 선택하세요 (검색 가능)';
+    step1.placeholder = vscode.l10n.t('Select a library or core (searchable)');
     step1.busy = true;
     step1.show();
 
@@ -107,7 +106,7 @@ export async function openExample(): Promise<void> {
 
         if (libsWithExamples.length === 0) {
             step1.dispose();
-            vscode.window.showInformationMessage('설치된 예제가 없습니다.');
+            vscode.window.showInformationMessage(vscode.l10n.t('No installed examples.'));
             return;
         }
 
@@ -121,14 +120,14 @@ export async function openExample(): Promise<void> {
         // 1. 포함된 예제들 (Built-in)
         if (builtinLibs.length > 0) {
             libItems.push({
-                label: '포함된 예제들',
+                label: vscode.l10n.t('Built-in Examples'),
                 kind: vscode.QuickPickItemKind.Separator
             });
             for (const lib of builtinLibs) {
                 libItems.push({
                     label: `$(file-code) ${lib.library.name}`,
-                    description: `예제 ${lib.examples.length}개`,
-                    detail: '기본 예제',
+                    description: vscode.l10n.t('{0} examples', lib.examples.length),
+                    detail: vscode.l10n.t('Basic examples'),
                     libData: lib
                 });
             }
@@ -137,14 +136,14 @@ export async function openExample(): Promise<void> {
         // 2. 내장 코어 예제 (Platform)
         if (platformLibs.length > 0) {
             libItems.push({
-                label: '내장 코어 예제',
+                label: vscode.l10n.t('Core Examples'),
                 kind: vscode.QuickPickItemKind.Separator
             });
             for (const lib of platformLibs) {
                 libItems.push({
                     label: `$(circuit-board) ${lib.library.name}`,
-                    description: `예제 ${lib.examples.length}개`,
-                    detail: '현재 선택된 보드의 코어 예제',
+                    description: vscode.l10n.t('{0} examples', lib.examples.length),
+                    detail: vscode.l10n.t('Examples for the currently selected board\'s core'),
                     libData: lib
                 });
             }
@@ -153,14 +152,14 @@ export async function openExample(): Promise<void> {
         // 3. 사용자 정의 라이브러리
         if (customLibs.length > 0) {
             libItems.push({
-                label: '사용자 정의 라이브러리의 예',
+                label: vscode.l10n.t('User Library Examples'),
                 kind: vscode.QuickPickItemKind.Separator
             });
             for (const lib of customLibs) {
                 libItems.push({
                     label: `$(library) ${lib.library.name}`,
-                    description: `예제 ${lib.examples.length}개`,
-                    detail: '설치된 외부 라이브러리',
+                    description: vscode.l10n.t('{0} examples', lib.examples.length),
+                    detail: vscode.l10n.t('Installed external library'),
                     libData: lib
                 });
             }
@@ -185,8 +184,8 @@ export async function openExample(): Promise<void> {
         step1.onDidHide(() => step1.dispose());
     } catch (error) {
         step1.dispose();
-        const message = error instanceof Error ? error.message : '알 수 없는 오류';
-        vscode.window.showErrorMessage(`예제 탐색 실패: ${message}`);
+        const message = error instanceof Error ? error.message : vscode.l10n.t('Unknown error');
+        vscode.window.showErrorMessage(vscode.l10n.t('Example browsing failed: {0}', message));
     }
 }
 
@@ -200,7 +199,7 @@ async function showExamplePicker(
     examplePaths: string[]
 ): Promise<void> {
     const step2 = vscode.window.createQuickPick();
-    step2.placeholder = `${libName} — 예제를 선택하세요`;
+    step2.placeholder = vscode.l10n.t('{0} — Select an example', libName);
     step2.items = examplePaths.map((exPath) => ({
         label: `$(file-code) ${basename(exPath)}`,
         detail: exPath,
@@ -219,14 +218,14 @@ async function showExamplePicker(
         const exampleName = selected.label.replace('$(file-code) ', '');
 
         const action = await vscode.window.showInformationMessage(
-            `"${exampleName}" 예제를 어떻게 여시겠습니까?`,
-            '새 창에서 열기',
-            '현재 창에서 열기'
+            vscode.l10n.t('How would you like to open the "{0}" example?', exampleName),
+            vscode.l10n.t('Open in New Window'),
+            vscode.l10n.t('Open in Current Window')
         );
 
-        if (action === '새 창에서 열기') {
+        if (action === vscode.l10n.t('Open in New Window')) {
             vscode.commands.executeCommand('vscode.openFolder', folderUri, true);
-        } else if (action === '현재 창에서 열기') {
+        } else if (action === vscode.l10n.t('Open in Current Window')) {
             vscode.commands.executeCommand('vscode.openFolder', folderUri, false);
         }
     });

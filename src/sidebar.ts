@@ -21,17 +21,17 @@ export class ArduinoSidebarProvider implements vscode.TreeDataProvider<CommandIt
 
         // 최상위 루트 항목들
         const commands = [
-            new CommandItem('보드/포트 자동 감지', 'arduino.autoDetect', 'zap', 'USB에 연결된 단일 보드를 찾아 자동으로 설정합니다.'),
-            new CommandItem('수동 보드 선택', 'arduino.selectBoard', 'circuit-board', '수동으로 보드를 검색하여 선택합니다.'),
-            new CommandItem('수동 포트 선택', 'arduino.selectPort', 'plug', '수동으로 연결될 포트를 선택합니다.'),
-            new CommandItem('보드/포트 다시 선택', 'arduino.selectBoardAndPort', 'gear', 'QuickPick을 이용하여 보드와 포트를 다시 설정합니다.'),
-            new CommandItem('스케치 컴파일 (확인)', 'arduino.compile', 'check', '현재 스케치를 컴파일하여 오류를 검사합니다.'),
-            new CommandItem('스케치 업로드', 'arduino.upload', 'arrow-right', '연결된 보드에 스케치를 컴파일 및 업로드합니다.'),
-            new CommandItem('시리얼 모니터 열기', 'arduino.serialMonitor', 'terminal', '시리얼 모니터를 열어 보드와 통신합니다.'),
-            new CommandItem('새 스케치 생성', 'arduino.newSketch', 'new-file', '새로운 아두이노 스케치 템플릿을 생성합니다.'),
-            new CommandItem('라이브러리 설치', 'arduino.installLibrary', 'library', 'Arduino 호환 라이브러리를 검색하고 설치합니다.'),
-            new CommandItem('코어/플랫폼 설치', 'arduino.installCore', 'package', '새로운 보드 지원을 위한 코어(플랫폼)를 설치합니다.'),
-            new CommandItem('예제 스케치 열기', 'arduino.openExample', 'file-code', '설치된 라이브러리/코어의 예제 목록을 탐색하고 엽니다.')
+            new CommandItem(vscode.l10n.t('Auto-detect Board/Port'), 'arduino.autoDetect', 'zap', vscode.l10n.t('Finds a single board connected via USB and sets it automatically.')),
+            new CommandItem(vscode.l10n.t('Manual Board Selection'), 'arduino.selectBoard', 'circuit-board', vscode.l10n.t('Manually search and select a board.')),
+            new CommandItem(vscode.l10n.t('Manual Port Selection'), 'arduino.selectPort', 'plug', vscode.l10n.t('Manually select a connection port.')),
+            new CommandItem(vscode.l10n.t('Change Board/Port'), 'arduino.selectBoardAndPort', 'gear', vscode.l10n.t('Use QuickPick to reconfigure board and port.')),
+            new CommandItem(vscode.l10n.t('Compile Sketch (Verify)'), 'arduino.compile', 'check', vscode.l10n.t('Compiles the current sketch to check for errors.')),
+            new CommandItem(vscode.l10n.t('Upload Sketch'), 'arduino.upload', 'arrow-right', vscode.l10n.t('Compiles and uploads the sketch to the connected board.')),
+            new CommandItem(vscode.l10n.t('Open Serial Monitor'), 'arduino.serialMonitor', 'terminal', vscode.l10n.t('Opens the serial monitor to communicate with the board.')),
+            new CommandItem(vscode.l10n.t('Create New Sketch'), 'arduino.newSketch', 'new-file', vscode.l10n.t('Creates a new Arduino sketch template.')),
+            new CommandItem(vscode.l10n.t('Install Library'), 'arduino.installLibrary', 'library', vscode.l10n.t('Search and install Arduino-compatible libraries.')),
+            new CommandItem(vscode.l10n.t('Install Core/Platform'), 'arduino.installCore', 'package', vscode.l10n.t('Install a core (platform) for new board support.')),
+            new CommandItem(vscode.l10n.t('Open Example Sketch'), 'arduino.openExample', 'file-code', vscode.l10n.t('Browse and open examples from installed libraries/cores.'))
         ];
 
         return Promise.resolve(commands);

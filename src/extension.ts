@@ -29,10 +29,10 @@ export async function activate(
     const version = await checkCliInstalled();
     if (!version) {
         const action = await vscode.window.showErrorMessage(
-            'arduino-cli를 찾을 수 없습니다. 설치 후 다시 시도하세요.',
-            '설치 가이드 열기'
+            vscode.l10n.t('arduino-cli not found. Please install it and try again.'),
+            vscode.l10n.t('Open Installation Guide')
         );
-        if (action === '설치 가이드 열기') {
+        if (action === vscode.l10n.t('Open Installation Guide')) {
             vscode.env.openExternal(
                 vscode.Uri.parse('https://arduino.github.io/arduino-cli/latest/installation/')
             );
@@ -123,14 +123,14 @@ export async function activate(
 async function newSketch(): Promise<void> {
     // 스케치 이름 입력
     const sketchName = await vscode.window.showInputBox({
-        prompt: '스케치 이름을 입력하세요',
-        placeHolder: '예: Blink, ServoTest, SensorReader',
+        prompt: vscode.l10n.t('Enter sketch name'),
+        placeHolder: vscode.l10n.t('e.g.: Blink, ServoTest, SensorReader'),
         validateInput: (value) => {
             if (!value) {
-                return '스케치 이름을 입력해주세요';
+                return vscode.l10n.t('Please enter a sketch name');
             }
             if (!/^[a-zA-Z][a-zA-Z0-9_]*$/.test(value)) {
-                return '영문/숫자/밑줄만 사용 가능 (영문으로 시작)';
+                return vscode.l10n.t('Only letters, numbers, underscores allowed (must start with a letter)');
             }
             return null;
         },
@@ -146,7 +146,7 @@ async function newSketch(): Promise<void> {
         canSelectFiles: false,
         canSelectFolders: true,
         canSelectMany: false,
-        openLabel: '스케치 생성 위치 선택',
+        openLabel: vscode.l10n.t('Select sketch creation location'),
         defaultUri,
     });
 
@@ -162,32 +162,32 @@ async function newSketch(): Promise<void> {
         fs.mkdirSync(sketchDir, { recursive: true });
     } catch (error) {
         const message =
-            error instanceof Error ? error.message : '알 수 없는 오류';
-        vscode.window.showErrorMessage(`스케치 폴더 생성 실패: ${message}`);
+            error instanceof Error ? error.message : vscode.l10n.t('Unknown error');
+        vscode.window.showErrorMessage(vscode.l10n.t('Failed to create sketch folder: {0}', message));
         return;
     }
 
     // 기본 템플릿 코드
     const template = `/**
- * ${sketchName} — Arduino 스케치
- * 생성일: ${new Date().toISOString().split('T')[0]}
+ * ${sketchName} — Arduino Sketch
+ * Created: ${new Date().toISOString().split('T')[0]}
  */
 
 /**
- * 초기 설정 — 보드 전원 켜질 때 한 번 실행됩니다.
+ * ${vscode.l10n.t('Initial setup — Runs once when board powers on.')}
  */
 void setup() {
-  // 시리얼 통신 초기화 (보드레이트: 9600)
+  // ${vscode.l10n.t('Initialize serial communication (baud rate: 9600)')}
   Serial.begin(9600);
 
-  // TODO: 핀 모드 설정, 초기화 코드 작성
+  // ${vscode.l10n.t('TODO: Set pin modes, write initialization code')}
 }
 
 /**
- * 메인 루프 — setup() 실행 후 무한 반복됩니다.
+ * ${vscode.l10n.t('Main loop — Repeats indefinitely after setup().')}
  */
 void loop() {
-  // TODO: 반복 실행할 코드 작성
+  // ${vscode.l10n.t('TODO: Write code to repeat')}
 }
 `;
 
@@ -199,12 +199,12 @@ void loop() {
         await vscode.window.showTextDocument(doc);
 
         vscode.window.showInformationMessage(
-            `✅ 새 스케치 "${sketchName}" 생성 완료!`
+            `✅ ${vscode.l10n.t('New sketch "{0}" created!', sketchName)}`
         );
     } catch (error) {
         const message =
-            error instanceof Error ? error.message : '알 수 없는 오류';
-        vscode.window.showErrorMessage(`스케치 파일 생성 실패: ${message}`);
+            error instanceof Error ? error.message : vscode.l10n.t('Unknown error');
+        vscode.window.showErrorMessage(vscode.l10n.t('Failed to create sketch file: {0}', message));
     }
 }
 

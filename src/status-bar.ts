@@ -23,7 +23,7 @@ export function initStatusBar(context: vscode.ExtensionContext): void {
         100
     );
     configurationStatusBarItem.command = 'arduino.selectBoardAndPort';
-    configurationStatusBarItem.tooltip = '클릭하여 Arduino 보드 및 포트 선택';
+    configurationStatusBarItem.tooltip = vscode.l10n.t('Click to select Arduino board and port');
     context.subscriptions.push(configurationStatusBarItem);
 
     // 컴파일 상태바 (우선순위: 99)
@@ -33,7 +33,7 @@ export function initStatusBar(context: vscode.ExtensionContext): void {
     );
     compileStatusBarItem.command = 'arduino.compile';
     compileStatusBarItem.text = '$(check)';
-    compileStatusBarItem.tooltip = 'Arduino: 확인 (컴파일)';
+    compileStatusBarItem.tooltip = vscode.l10n.t('Arduino: Verify (Compile)');
     compileStatusBarItem.show();
     context.subscriptions.push(compileStatusBarItem);
 
@@ -44,7 +44,7 @@ export function initStatusBar(context: vscode.ExtensionContext): void {
     );
     uploadStatusBarItem.command = 'arduino.upload';
     uploadStatusBarItem.text = '$(arrow-right)';
-    uploadStatusBarItem.tooltip = 'Arduino: 업로드';
+    uploadStatusBarItem.tooltip = vscode.l10n.t('Arduino: Upload');
     uploadStatusBarItem.show();
     context.subscriptions.push(uploadStatusBarItem);
 
@@ -58,8 +58,8 @@ export function initStatusBar(context: vscode.ExtensionContext): void {
 export function updateStatusBar(): void {
     const state = getState();
 
-    const boardText = state.selectedBoardName ? state.selectedBoardName : '보드 선택';
-    const portText = state.selectedPort ? state.selectedPort : '포트 선택';
+    const boardText = state.selectedBoardName ? state.selectedBoardName : vscode.l10n.t('Select Board');
+    const portText = state.selectedPort ? state.selectedPort : vscode.l10n.t('Select Port');
 
     configurationStatusBarItem.text = `$(circuit-board) ${boardText} | $(plug) ${portText}`;
     configurationStatusBarItem.show();

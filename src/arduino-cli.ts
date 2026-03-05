@@ -6,6 +6,7 @@
  */
 import { spawn } from 'child_process';
 import * as path from 'path';
+import * as vscode from 'vscode';
 import { getConfig } from './config';
 
 /** arduino-cli 실행 결과 */
@@ -76,7 +77,7 @@ export function runCli(
         const timeoutMs = options?.timeout ?? 60_000;
         const timer = setTimeout(() => {
             proc.kill('SIGTERM');
-            reject(new Error(`arduino-cli 실행 시간 초과 (${timeoutMs / 1000}초)`));
+            reject(new Error(vscode.l10n.t('arduino-cli execution timed out ({0}s)', timeoutMs / 1000)));
         }, timeoutMs);
 
         proc.on('close', (code) => {
@@ -92,8 +93,10 @@ export function runCli(
             clearTimeout(timer);
             reject(
                 new Error(
-                    `arduino-cli 실행 실패: ${err.message}\n` +
-                    '경로를 확인하세요 (설정: arduino.cliPath)'
+                    vscode.l10n.t(
+                        'arduino-cli execution failed: {0}\nCheck the path (Setting: arduino.cliPath)',
+                        err.message
+                    )
                 )
             );
         });
@@ -120,10 +123,12 @@ export async function runCliJson<T = unknown>(
         return { data, raw };
     } catch {
         throw new Error(
-            `arduino-cli JSON 파싱 실패:\n` +
-            `명령: arduino-cli ${jsonArgs.join(' ')}\n` +
-            `출력: ${raw.stdout}\n` +
-            `에러: ${raw.stderr}`
+            vscode.l10n.t(
+                'arduino-cli JSON parse failed:\nCommand: arduino-cli {0}\nOutput: {1}\nError: {2}',
+                jsonArgs.join(' '),
+                raw.stdout,
+                raw.stderr
+            )
         );
     }
 }

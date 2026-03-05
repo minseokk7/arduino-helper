@@ -17,10 +17,10 @@ export async function upload(): Promise<void> {
 
     if (!state.selectedFqbn) {
         const action = await vscode.window.showWarningMessage(
-            '보드가 선택되지 않았습니다.',
-            '보드 선택'
+            vscode.l10n.t('No board selected.'),
+            vscode.l10n.t('Select Board')
         );
-        if (action === '보드 선택') {
+        if (action === vscode.l10n.t('Select Board')) {
             await vscode.commands.executeCommand('arduino.selectBoard');
         }
         return;
@@ -28,10 +28,10 @@ export async function upload(): Promise<void> {
 
     if (!state.selectedPort) {
         const action = await vscode.window.showWarningMessage(
-            '포트가 선택되지 않았습니다.',
-            '포트 선택'
+            vscode.l10n.t('No port selected.'),
+            vscode.l10n.t('Select Port')
         );
-        if (action === '포트 선택') {
+        if (action === vscode.l10n.t('Select Port')) {
             await vscode.commands.executeCommand('arduino.selectPort');
         }
         return;
@@ -41,7 +41,7 @@ export async function upload(): Promise<void> {
     const sketchPath = getSketchPath();
     if (!sketchPath) {
         vscode.window.showErrorMessage(
-            '.ino 파일이 포함된 폴더를 열어주세요.'
+            vscode.l10n.t('Please open a folder containing a .ino file.')
         );
         return;
     }
@@ -51,7 +51,7 @@ export async function upload(): Promise<void> {
     await vscode.window.withProgress(
         {
             location: vscode.ProgressLocation.Notification,
-            title: 'Arduino 업로드 중...',
+            title: vscode.l10n.t('Uploading Arduino...'),
             cancellable: false,
         },
         async () => {
@@ -59,7 +59,7 @@ export async function upload(): Promise<void> {
                 // 먼저 컴파일
                 outputChannel.appendLine('');
                 outputChannel.appendLine('═'.repeat(60));
-                outputChannel.appendLine('📤 업로드 프로세스 시작');
+                outputChannel.appendLine(`📤 ${vscode.l10n.t('Upload process started')}`);
                 outputChannel.appendLine('═'.repeat(60));
 
                 // 컴파일 실행
@@ -71,7 +71,7 @@ export async function upload(): Promise<void> {
                 // 업로드 실행
                 outputChannel.appendLine('');
                 outputChannel.appendLine(
-                    `[업로드] 포트: ${state.selectedPort} | 보드: ${state.selectedFqbn}`
+                    vscode.l10n.t('[Upload] Port: {0} | Board: {1}', state.selectedPort!, state.selectedFqbn!)
                 );
 
                 const result = await runCli(
@@ -95,22 +95,22 @@ export async function upload(): Promise<void> {
 
                 if (result.exitCode === 0) {
                     outputChannel.appendLine('─'.repeat(60));
-                    outputChannel.appendLine('✅ 업로드 성공!');
+                    outputChannel.appendLine(`✅ ${vscode.l10n.t('Upload successful!')}`);
                     vscode.window.showInformationMessage(
-                        `Arduino 업로드 성공! (포트: ${state.selectedPort})`
+                        vscode.l10n.t('Arduino upload successful! (Port: {0})', state.selectedPort!)
                     );
                 } else {
                     outputChannel.appendLine('─'.repeat(60));
-                    outputChannel.appendLine('❌ 업로드 실패');
+                    outputChannel.appendLine(`❌ ${vscode.l10n.t('Upload failed')}`);
                     vscode.window.showErrorMessage(
-                        '업로드 실패. 포트/보드 연결을 확인하세요.'
+                        vscode.l10n.t('Upload failed. Check port/board connection.')
                     );
                 }
             } catch (error) {
                 const message =
-                    error instanceof Error ? error.message : '알 수 없는 오류';
-                outputChannel.appendLine(`업로드 오류: ${message}`);
-                vscode.window.showErrorMessage(`업로드 오류: ${message}`);
+                    error instanceof Error ? error.message : vscode.l10n.t('Unknown error');
+                outputChannel.appendLine(vscode.l10n.t('Upload error: {0}', message));
+                vscode.window.showErrorMessage(vscode.l10n.t('Upload error: {0}', message));
             }
         }
     );

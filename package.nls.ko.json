@@ -1,0 +1,18 @@
+{
+    "displayName": "Arduino Helper",
+    "description": "Arduino CLI 기반 VS Code 확장 — 컴파일, 업로드, 시리얼 모니터, 보드/라이브러리 관리",
+    "command.selectBoard": "Arduino: 보드 선택",
+    "command.selectPort": "Arduino: 포트 선택",
+    "command.compile": "Arduino: 컴파일 (확인)",
+    "command.upload": "Arduino: 업로드",
+    "command.serialMonitor": "Arduino: 시리얼 모니터",
+    "command.installLibrary": "Arduino: 라이브러리 설치",
+    "command.newSketch": "Arduino: 새 스케치",
+    "command.installCore": "Arduino: 코어 설치",
+    "command.selectBoardAndPort": "Arduino: 보드 및 포트 변경",
+    "command.autoDetect": "Arduino: 보드/포트 자동 감지",
+    "command.openExample": "Arduino: 예제 스케치 열기",
+    "config.cliPath.description": "arduino-cli 실행 파일 경로 (PATH에 있으면 기본값 사용)",
+    "config.defaultBaudRate.description": "시리얼 모니터 기본 보드레이트",
+    "config.autoDetectBoard.description": "USB 연결 시 보드 자동 감지 여부"
+}

@@ -51,11 +51,11 @@ function createLibraryItem(
 ): vscode.QuickPickItem {
     const isInstalled = installedNames.has(lib.name);
     const icon = isInstalled ? '$(check)' : '$(package)';
-    const statusLabel = isInstalled ? ' [설치됨]' : '';
+    const statusLabel = isInstalled ? vscode.l10n.t(' [Installed]') : '';
     return {
         label: `${icon} ${lib.name}${statusLabel}`,
         description: `v${lib.latest.version}`,
-        detail: `${lib.latest.sentence || '설명 없음'} | 작성자: ${lib.latest.author || '알 수 없음'}`,
+        detail: `${lib.latest.sentence || vscode.l10n.t('No description')} | ${vscode.l10n.t('Author: {0}', lib.latest.author || '?')}`,
     };
 }
 
@@ -67,7 +67,7 @@ function createLibraryItem(
  */
 export async function installLibrary(): Promise<void> {
     const quickPick = vscode.window.createQuickPick();
-    quickPick.placeholder = '라이브러리 이름을 입력하여 필터링...';
+    quickPick.placeholder = vscode.l10n.t('Filter by library name...');
     quickPick.matchOnDescription = true;
     quickPick.matchOnDetail = true;
     quickPick.busy = true;
@@ -83,11 +83,11 @@ export async function installLibrary(): Promise<void> {
     /** 필터 버튼 정의 */
     const btnAll: vscode.QuickInputButton = {
         iconPath: new vscode.ThemeIcon('library'),
-        tooltip: '전체 라이브러리 보기',
+        tooltip: vscode.l10n.t('View all libraries'),
     };
     const btnInstalled: vscode.QuickInputButton = {
         iconPath: new vscode.ThemeIcon('check-all'),
-        tooltip: '설치된 라이브러리만 보기',
+        tooltip: vscode.l10n.t('View installed libraries only'),
     };
     quickPick.buttons = [btnInstalled];
 
@@ -106,8 +106,8 @@ export async function installLibrary(): Promise<void> {
 
         quickPick.placeholder =
             currentFilter === 'installed'
-                ? `설치된 라이브러리 필터링... (${installedNames.size}개)`
-                : `라이브러리 이름을 입력하여 필터링... (총 ${allLibraries.length}개)`;
+                ? vscode.l10n.t('Filter installed libraries... ({0})', installedNames.size)
+                : vscode.l10n.t('Filter by library name... (total {0})', allLibraries.length);
     }
 
     // 필터 버튼 토글 이벤트
@@ -142,12 +142,15 @@ export async function installLibrary(): Promise<void> {
         quickPick.hide();
         quickPick.dispose();
         const message =
-            error instanceof Error ? error.message : '알 수 없는 오류';
+            error instanceof Error ? error.message : vscode.l10n.t('Unknown error');
         vscode.window.showErrorMessage(
-            `라이브러리 목록 로딩 실패: ${message}`
+            vscode.l10n.t('Failed to load library list: {0}', message)
         );
         return;
     }
+
+    // [설치됨] 태그의 번역된 값을 미리 저장
+    const installedTag = vscode.l10n.t(' [Installed]');
 
     // 라이브러리 선택 이벤트
     quickPick.onDidAccept(async () => {
@@ -159,7 +162,7 @@ export async function installLibrary(): Promise<void> {
         // 라이브러리 이름 추출 (아이콘, [설치됨] 태그 제거)
         const libName = selected.label
             .replace(/^\$\([^)]+\)\s*/, '')
-            .replace(/\s*\[설치됨\]$/, '');
+            .replace(new RegExp(`\\s*${escapeRegExp(installedTag)}$`), '');
 
         quickPick.hide();
         quickPick.dispose();
@@ -167,21 +170,21 @@ export async function installLibrary(): Promise<void> {
         // 이미 설치된 경우 안내
         if (installedNames.has(libName)) {
             const action = await vscode.window.showInformationMessage(
-                `"${libName}" 라이브러리는 이미 설치되어 있습니다.`,
-                '재설치 (업데이트)',
-                '취소'
+                vscode.l10n.t('Library "{0}" is already installed.', libName),
+                vscode.l10n.t('Reinstall (Update)'),
+                vscode.l10n.t('Cancel')
             );
-            if (action !== '재설치 (업데이트)') {
+            if (action !== vscode.l10n.t('Reinstall (Update)')) {
                 return;
             }
         } else {
             // 설치 확인
             const confirm = await vscode.window.showInformationMessage(
-                `"${libName}" 라이브러리를 설치하시겠습니까?`,
-                '설치',
-                '취소'
+                vscode.l10n.t('Install library "{0}"?', libName),
+                vscode.l10n.t('Install'),
+                vscode.l10n.t('Cancel')
             );
-            if (confirm !== '설치') {
+            if (confirm !== vscode.l10n.t('Install')) {
                 return;
             }
         }
@@ -190,7 +193,7 @@ export async function installLibrary(): Promise<void> {
         await vscode.window.withProgress(
             {
                 location: vscode.ProgressLocation.Notification,
-                title: `"${libName}" 라이브러리 설치 중...`,
+                title: vscode.l10n.t('Installing library "{0}"...', libName),
                 cancellable: false,
             },
             async () => {
@@ -203,7 +206,7 @@ export async function installLibrary(): Promise<void> {
 
                     if (installResult.exitCode === 0) {
                         vscode.window.showInformationMessage(
-                            `✅ "${libName}" 라이브러리 설치 완료!`
+                            `✅ ${vscode.l10n.t('Library "{0}" installed!', libName)}`
                         );
 
                         // 현재 열린 .ino 파일에 #include 추가 제안
@@ -213,12 +216,12 @@ export async function installLibrary(): Promise<void> {
                         ) {
                             const addInclude =
                                 await vscode.window.showInformationMessage(
-                                    `#include <${libName}.h>를 스케치에 추가하시겠습니까?`,
-                                    '추가',
-                                    '건너뛰기'
+                                    vscode.l10n.t('Add #include <{0}.h> to sketch?', libName),
+                                    vscode.l10n.t('Add'),
+                                    vscode.l10n.t('Skip')
                                 );
 
-                            if (addInclude === '추가') {
+                            if (addInclude === vscode.l10n.t('Add')) {
                                 const edit = new vscode.WorkspaceEdit();
                                 const doc = activeEditor.document;
                                 edit.insert(
@@ -231,16 +234,16 @@ export async function installLibrary(): Promise<void> {
                         }
                     } else {
                         vscode.window.showErrorMessage(
-                            `라이브러리 설치 실패: ${installResult.stderr}`
+                            vscode.l10n.t('Library installation failed: {0}', installResult.stderr)
                         );
                     }
                 } catch (error) {
                     const message =
                         error instanceof Error
                             ? error.message
-                            : '알 수 없는 오류';
+                            : vscode.l10n.t('Unknown error');
                     vscode.window.showErrorMessage(
-                        `라이브러리 설치 실패: ${message}`
+                        vscode.l10n.t('Library installation failed: {0}', message)
                     );
                 }
             }
@@ -258,8 +261,8 @@ export async function installLibrary(): Promise<void> {
  */
 export async function installCore(): Promise<void> {
     const query = await vscode.window.showInputBox({
-        prompt: '설치할 코어를 검색하세요',
-        placeHolder: '예: arduino, esp32, esp8266, rp2040',
+        prompt: vscode.l10n.t('Search for a core to install'),
+        placeHolder: vscode.l10n.t('e.g.: arduino, esp32, esp8266, rp2040'),
     });
 
     if (!query) {
@@ -269,7 +272,7 @@ export async function installCore(): Promise<void> {
     await vscode.window.withProgress(
         {
             location: vscode.ProgressLocation.Notification,
-            title: `"${query}" 코어 검색 중...`,
+            title: vscode.l10n.t('Searching for core "{0}"...', query),
             cancellable: false,
         },
         async () => {
@@ -289,7 +292,7 @@ export async function installCore(): Promise<void> {
                 const platforms = result.data.platforms ?? [];
                 if (platforms.length === 0) {
                     vscode.window.showWarningMessage(
-                        `"${query}"에 해당하는 코어를 찾을 수 없습니다.`
+                        vscode.l10n.t('No core found for "{0}".', query)
                     );
                     return;
                 }
@@ -298,12 +301,12 @@ export async function installCore(): Promise<void> {
                     label: `$(package) ${p.name}`,
                     description: p.id,
                     detail: p.installed
-                        ? `설치됨: v${p.installed} | 최신: v${p.latest}`
-                        : `최신: v${p.latest}`,
+                        ? vscode.l10n.t('Installed: v{0} | Latest: v{1}', p.installed, p.latest)
+                        : vscode.l10n.t('Latest: v{0}', p.latest),
                 }));
 
                 const selected = await vscode.window.showQuickPick(items, {
-                    placeHolder: '설치할 코어를 선택하세요',
+                    placeHolder: vscode.l10n.t('Select a core to install'),
                 });
 
                 if (!selected?.description) {
@@ -318,18 +321,27 @@ export async function installCore(): Promise<void> {
 
                 if (installResult.exitCode === 0) {
                     vscode.window.showInformationMessage(
-                        `✅ "${selected.description}" 코어 설치 완료!`
+                        `✅ ${vscode.l10n.t('Core "{0}" installed!', selected.description)}`
                     );
                 } else {
                     vscode.window.showErrorMessage(
-                        `코어 설치 실패: ${installResult.stderr}`
+                        vscode.l10n.t('Core installation failed: {0}', installResult.stderr)
                     );
                 }
             } catch (error) {
                 const message =
-                    error instanceof Error ? error.message : '알 수 없는 오류';
-                vscode.window.showErrorMessage(`코어 검색 실패: ${message}`);
+                    error instanceof Error ? error.message : vscode.l10n.t('Unknown error');
+                vscode.window.showErrorMessage(vscode.l10n.t('Core search failed: {0}', message));
             }
         }
     );
+}
+
+/**
+ * 정규식 특수문자를 이스케이프합니다.
+ * @param str 이스케이프할 문자열
+ * @returns 이스케이프된 문자열
+ */
+function escapeRegExp(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
