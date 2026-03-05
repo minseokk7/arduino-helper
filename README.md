@@ -12,15 +12,17 @@ Arduino CLI-based VS Code extension — compile, upload, serial monitor, and boa
 
 ### Features
 
-- **Board Selection** — Select from all installed boards (auto-detect USB-connected boards)
-- **Port Selection** — Pick connected COM ports
-- **Compile** — Compile sketches + display errors in the editor
-- **Upload** — Compile and auto-upload to your board
-- **Serial Monitor** — Open serial monitor in the terminal
-- **Library Install** — Search → Select → Install
-- **New Sketch** — Create sketches from templates
-- **Core Install** — Install board platform packages
-- **Example Sketches** — Browse and open example sketches from libraries/cores
+- **Auto-Download CLI** — Automatically downloads `arduino-cli` if not found (v0.2.2+)
+- **Board Selection** — Select from all installed boards
+- **Port Selection** — Pick connected COM ports (auto-detects USB boards)
+- **Compile & Upload** — Integrated `Ctrl+Shift+B` TaskProvider support
+- **Serial Monitor** — Interactive serial monitor in the terminal
+- **Serial Plotter (GUI)** — Visualize real-time telemetry data with Chart.js
+- **Manager GUI (Webview)** — Visually search and install boards and libraries
+- **IntelliSense & Clangd** — Generates `c_cpp_properties.json` and `compile_commands.json`
+- **Code Snippets** — Built-in Arduino snippets (`setup`, `loop`, `pm`, etc.)
+- **Hardware Debugging** — Auto-generate `launch.json` for Cortex-Debug
+- **Example Sketches** — Browse and open library/core examples
 
 ### Prerequisites
 
@@ -47,15 +49,16 @@ Arduino CLI 기반 VS Code 확장 — 컴파일, 업로드, 시리얼 모니터,
 
 ### 기능
 
-- **보드 선택** — 설치된 모든 보드 중 선택 (USB 연결 보드 자동 감지)
-- **포트 선택** — 연결된 COM 포트 선택
-- **컴파일** — 스케치 컴파일 + 에러를 에디터에 표시
-- **업로드** — 컴파일 후 보드에 자동 업로드
-- **시리얼 모니터** — 터미널에서 시리얼 모니터 열기
-- **라이브러리 설치** — 검색 → 선택 → 설치
-- **새 스케치** — 템플릿 기반 스케치 생성
-- **코어 설치** — 보드 플랫폼 패키지 설치
-- **예제 스케치** — 설치된 라이브러리/코어의 예제를 탐색하고 열기
+- **CLI 자동 다운로드** — `arduino-cli`가 없으면 자동으로 다운로드 (v0.2.2+)
+- **보드 & 포트 선택** — 설치된 플러그인에서 보드 선택 및 연결된 USB 자동 감지
+- **컴파일 및 업로드** — `Ctrl+Shift+B` 빌드 단축키(Task 연동)를 통한 빠른 컴파일/업로드
+- **시리얼 모니터** — 가상 터미널 환경에서 입출력이 가능한 시리얼 통신
+- **시리얼 플로터 (GUI)** — 센서 출력 데이터를 실시간 다중 채널 그래프(Chart.js)로 시각화
+- **매니저 대시보드 (Webview)** — 라이브러리 및 보드 코어를 시각적인 화면에서 검색/설치
+- **인텔리센스 & Clangd** — `c_cpp_properties.json` 및 `compile_commands.json` 자동 생성 지원
+- **코드 스니펫** — `setup`, `loop`, `pm` 등 필수 아두이노 코드 자동완성
+- **하드웨어 디버깅** — OpenOCD 및 Cortex-Debug를 위한 `launch.json` 자동 구성
+- **예제 스케치** — 라이브러리/코어의 예제를 탐색하고 새 창으로 열기
 
 ### 사전 요구 사항
 
