@@ -179,7 +179,7 @@ export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
             border: 1px solid var(--border-glass);
             border-radius: 12px;
             padding: 16px;
-            display: none; /* Hidden until compile finishes */
+            display: flex; /* Always visible for discoverability */
             flex-direction: column;
             gap: 12px;
         }
@@ -300,22 +300,29 @@ export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
 
     <div class="memory-section" id="memorySection">
         <div class="section-title" style="margin-bottom: 0px;">${lblMemoryUsage}</div>
-        <div class="memory-row">
-            <div class="memory-header">
-                <span>${lblFlash}</span>
-                <span id="flashText">0%</span>
-            </div>
-            <div class="progress-track">
-                <div class="progress-fill" id="flashBar"></div>
-            </div>
+        <div class="memory-row" id="memoryWaitMessage">
+            <span style="font-size: 11px; color: var(--text-muted); font-style: italic;">
+                ${vscode.l10n.t('Compile to see stats')}
+            </span>
         </div>
-        <div class="memory-row">
-            <div class="memory-header">
-                <span>${lblRAM}</span>
-                <span id="ramText">0%</span>
+        <div id="memoryBars" style="display: none; flex-direction: column; gap: 12px;">
+            <div class="memory-row">
+                <div class="memory-header">
+                    <span>${lblFlash}</span>
+                    <span id="flashText">0%</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="flashBar"></div>
+                </div>
             </div>
-            <div class="progress-track">
-                <div class="progress-fill" id="ramBar"></div>
+            <div class="memory-row">
+                <div class="memory-header">
+                    <span>${lblRAM}</span>
+                    <span id="ramText">0%</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="ramBar"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -387,15 +394,18 @@ export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
                 if (message.port !== message.noPortText) portInd.classList.add('active');
                 else portInd.classList.remove('active');
             } else if (message.command === 'updateMemory') {
-                const memSection = document.getElementById('memorySection');
+                const memWait = document.getElementById('memoryWaitMessage');
+                const memBars = document.getElementById('memoryBars');
                 
                 if (!message.memory) {
                     // Compilation failed or no metrics
-                    memSection.style.display = 'none';
+                    memWait.style.display = 'block';
+                    memBars.style.display = 'none';
                     return;
                 }
 
-                memSection.style.display = 'flex';
+                memWait.style.display = 'none';
+                memBars.style.display = 'flex';
                 
                 const m = message.memory;
                 const flashPct = (m.flashCurrent / m.flashMax) * 100;

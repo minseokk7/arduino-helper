@@ -112,7 +112,7 @@ export async function compile(): Promise<boolean> {
     outputChannel.appendLine('─'.repeat(60));
 
     try {
-        await vscode.window.withProgress(
+        const success = await vscode.window.withProgress(
             {
                 location: vscode.ProgressLocation.Notification,
                 title: vscode.l10n.t('Compiling Arduino...'),
@@ -140,8 +140,11 @@ export async function compile(): Promise<boolean> {
                     outputChannel.appendLine(`✅ ${vscode.l10n.t('Compile successful!')}`);
 
                     // 메모리 파싱 (예: "Sketch uses 444 bytes (1%) of program storage space. Maximum is 32256 bytes.")
-                    const flashMatch = result.stdout.match(/uses (\d+) bytes[^(]*\(([^%]+)%\).*?Maximum is (\d+) bytes/);
-                    const ramMatch = result.stdout.match(/use (\d+) bytes[^(]*\(([^%]+)%\).*?Maximum is (\d+) bytes/);
+                    const flashRegex = /uses\s+(\d+)\s+bytes.*?(\d+)%.*?Maximum\s+is\s+(\d+)\s+bytes/i;
+                    const ramRegex = /use\s+(\d+)\s+bytes.*?(\d+)%.*?Maximum\s+is\s+(\d+)\s+bytes/i;
+
+                    const flashMatch = result.stdout.match(flashRegex);
+                    const ramMatch = result.stdout.match(ramRegex);
                     
                     if (flashMatch && ramMatch) {
                         onDidCompile.fire({
@@ -179,7 +182,7 @@ export async function compile(): Promise<boolean> {
                 return result.exitCode === 0;
             }
         );
-        return true;
+        return success === true;
     } catch (error) {
         const message =
             error instanceof Error ? error.message : vscode.l10n.t('Unknown error');

@@ -2,7 +2,7 @@
     "name": "arduino-helper",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "0.6.1",
+    "version": "0.6.2",
     "publisher": "minseokk7",
     "repository": {
         "type": "git",
@@ -192,7 +192,9 @@
         "compile": "node esbuild.js",
         "watch": "node esbuild.js --watch",
         "package": "npx @vscode/vsce package --no-dependencies",
-        "lint": "eslint src --ext ts"
+        "lint": "eslint src --ext ts",
+        "build:strict": "tsc --noEmit && node esbuild.js",
+        "vscode:prepublish": "npm run build:strict"
     },
     "devDependencies": {
         "@types/node": "^20.0.0",
