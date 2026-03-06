@@ -2,7 +2,7 @@
     "name": "arduino-helper",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "0.4.5",
+    "version": "0.5.0",
     "publisher": "minseokk7",
     "repository": {
         "type": "git",
@@ -95,6 +95,10 @@
                 "command": "arduino.openExample",
                 "title": "%command.openExample%",
                 "icon": "$(file-code)"
+            },
+            {
+                "command": "arduino.updateAll",
+                "title": "%command.updateAll%"
             }
         ],
         "viewsContainers": {
@@ -109,8 +113,9 @@
         "views": {
             "arduino-helper": [
                 {
-                    "id": "arduino-helper-view",
-                    "name": "Commands",
+                    "id": "arduino-sidebar",
+                    "name": "Arduino Dashboard",
+                    "type": "webview",
                     "icon": "resources/arduino-icon.svg"
                 }
             ]
@@ -146,6 +151,11 @@
                     "type": "boolean",
                     "default": true,
                     "description": "%config.autoDetectBoard.description%"
+                },
+                "arduino.autoUpdate": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "%config.autoUpdate.description%"
                 }
             }
         },

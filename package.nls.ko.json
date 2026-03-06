@@ -14,7 +14,9 @@
     "command.installCore": "Arduino: 코어 설치 (Install Core)",
     "command.autoDetect": "Arduino: 보드/포트 자동 감지 (Auto-detect)",
     "command.openExample": "Arduino: 예제 열기 (Open Example)",
+    "command.updateAll": "Arduino: 보드/라이브러리 모두 업데이트 (Update All)",
     "config.cliPath.description": "arduino-cli 실행 파일 경로 (PATH에 있으면 기본값 사용)",
     "config.defaultBaudRate.description": "시리얼 모니터 기본 보드레이트",
-    "config.autoDetectBoard.description": "USB 연결 시 보드 자동 감지 여부"
+    "config.autoDetectBoard.description": "USB 연결 시 보드 자동 감지 여부",
+    "config.autoUpdate.description": "확장 프로그램 시작 시 설치된 코어(보드) 및 라이브러리 자동 업데이트 검사 및 설치 여부"
 }

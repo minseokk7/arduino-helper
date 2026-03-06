@@ -21,6 +21,7 @@ import { ArduinoTaskProvider } from './task-provider';
 import { openSerialPlotter } from './webviews/serial-plotter';
 import { openManagerGUI } from './webviews/manager-gui';
 import { generateDebugConfig } from './debugger';
+import { updateAll } from './updater';
 
 /**
  * 확장이 활성화될 때 호출됩니다.
@@ -55,13 +56,27 @@ export async function activate(
     // 작업 공간 설정 로딩
     loadWorkspaceState();
 
+    // 설정: 자동 업데이트 체크
+    const config = vscode.workspace.getConfiguration('arduino');
+    if (config.get<boolean>('autoUpdate')) {
+        // 비동기로 실행하여 확장의 빠른 활성화 방해 안 함
+        updateAll().catch(e => console.error('Auto update failed:', e));
+    }
+
     // 컴파일러 및 상태바 초기화
     initCompiler(context);
     initStatusBar(context);
 
-    // 사이드바 등록
-    const sidebarProvider = new ArduinoSidebarProvider();
-    vscode.window.registerTreeDataProvider('arduino-helper-view', sidebarProvider);
+    // 사이드바 등록 (Webview)
+    const sidebarProvider = new ArduinoSidebarProvider(context.extensionUri);
+    vscode.window.registerWebviewViewProvider('arduino-sidebar', sidebarProvider);
+
+    // 환경설정(Board, Port)이 바뀔 때 사이드바 웹뷰도 업데이트
+    vscode.workspace.onDidChangeConfiguration((e) => {
+        if (e.affectsConfiguration('arduino.fqbn') || e.affectsConfiguration('arduino.port')) {
+            sidebarProvider.updateState();
+        }
+    });
 
     // 태스크 제공자(TaskProvider) 등록 (Ctrl+Shift+B 연동)
     const taskProvider = vscode.tasks.registerTaskProvider(

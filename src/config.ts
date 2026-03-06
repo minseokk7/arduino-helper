@@ -59,6 +59,18 @@ export function getState(): ArduinoState {
 }
 
 /**
+ * Sidebar 대시보드 표시를 위해 저장된 보드 및 포트 설정을 반환합니다.
+ */
+export function getBoardState(): { fqbn: string | undefined; port: string | undefined; boardName: string | undefined } {
+    const config = vscode.workspace.getConfiguration('arduino');
+    return {
+        fqbn: config.get<string>('fqbn'),
+        port: config.get<string>('port'),
+        boardName: config.get<string>('boardName')
+    };
+}
+
+/**
  * 런타임 상태를 업데이트합니다.
  * @param updates 변경할 필드들
  */

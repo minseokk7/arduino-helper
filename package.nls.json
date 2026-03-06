@@ -14,7 +14,9 @@
     "command.installCore": "Arduino: Install Core (코어 설치)",
     "command.autoDetect": "Arduino: Auto-detect Board/Port (보드/포트 자동 감지)",
     "command.openExample": "Arduino: Open Example Sketch (예제 열기)",
+    "command.updateAll": "Arduino: Update All Libraries and Boards (보드/라이브러리 모두 업데이트)",
     "config.cliPath.description": "Path to arduino-cli executable (use default if in PATH)",
     "config.defaultBaudRate.description": "Default baud rate for serial monitor",
-    "config.autoDetectBoard.description": "Auto-detect board on USB connection"
+    "config.autoDetectBoard.description": "Auto-detect board on USB connection",
+    "config.autoUpdate.description": "Automatically check and update installed cores and libraries on extension startup"
 }
