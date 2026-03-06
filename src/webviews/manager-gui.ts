@@ -217,7 +217,7 @@ function getWebviewContent(): string {
                 let desc = '';
                 if (type === 'lib') {
                     name = (item.name || '').toLowerCase();
-                    const release = item.releases[item.releases.length - 1];
+                    const release = item.latest || {};
                     desc = ((release.sentence || '') + ' ' + (release.paragraph || '')).toLowerCase();
                 } else {
                     // 코어: name은 releases[latest_version] 안에 있음
@@ -263,7 +263,7 @@ function getWebviewContent(): string {
                 let version = '';
 
                 if (type === 'lib') {
-                    const release = item.releases[item.releases.length - 1];
+                    const release = item.latest || {};
                     id = item.name;
                     name = item.name;
                     author = release.author || '';
