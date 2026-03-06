@@ -19,6 +19,10 @@ Arduino CLI-based VS Code extension — compile, upload, serial monitor, and boa
 - **Serial Monitor** — Interactive serial monitor in the terminal
 - **Serial Plotter (GUI)** — Visualize real-time telemetry data with Chart.js
 - **Manager GUI (Webview)** — Visually search and install boards and libraries
+- **Webview Dashboard** — Rich graphical sidebar interface
+- **Memory Inspector** — Real-time Flash & RAM usage bars after compilation
+- **Dependency Management** — Auto-install missing libraries from `arduino.json`
+- **Enhanced Serial Monitor** — Timestamps, Hex View, and Log Export functionality
 - **IntelliSense & Clangd** — Generates `c_cpp_properties.json` and `compile_commands.json`
 - **Code Snippets** — Built-in Arduino snippets (`setup`, `loop`, `pm`, etc.)
 - **Hardware Debugging** — Auto-generate `launch.json` for Cortex-Debug
@@ -55,6 +59,10 @@ Arduino CLI 기반 VS Code 확장 — 컴파일, 업로드, 시리얼 모니터,
 - **시리얼 모니터** — 가상 터미널 환경에서 입출력이 가능한 시리얼 통신
 - **시리얼 플로터 (GUI)** — 센서 출력 데이터를 실시간 다중 채널 그래프(Chart.js)로 시각화
 - **매니저 대시보드 (Webview)** — 라이브러리 및 보드 코어를 시각적인 화면에서 검색/설치
+- **웹뷰 대시보드 사이드바** — 시각적이고 풍부한 인터페이스 제공
+- **메모리 사용량 검사기** — 컴파일 완료 후 실시간 Flash 및 RAM 점유율 프로그레스 바 표시
+- **프로젝트 종속성 자동 관리** — `arduino.json`의 라이브러리 배열을 읽고 누락된 패키지 자동 설치
+- **향상된 시리얼 모니터** — 타임스탬프 기록, 16진수(Hex) 뷰, 로그 텍스트로 내보내기 기능
 - **인텔리센스 & Clangd** — `c_cpp_properties.json` 및 `compile_commands.json` 자동 생성 지원
 - **코드 스니펫** — `setup`, `loop`, `pm` 등 필수 아두이노 코드 자동완성
 - **하드웨어 디버깅** — OpenOCD 및 Cortex-Debug를 위한 `launch.json` 자동 구성
