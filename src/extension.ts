@@ -95,6 +95,7 @@ export async function activate(
                 handler: async () => {
                     await selectBoard();
                     updateStatusBar();
+                    sidebarProvider.updateState();
                 },
             },
 
@@ -103,6 +104,7 @@ export async function activate(
                 handler: async () => {
                     await autoDetectBoardAndPort();
                     updateStatusBar();
+                    sidebarProvider.updateState();
                 }
             },
             {

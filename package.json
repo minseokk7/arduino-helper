@@ -2,7 +2,7 @@
     "name": "arduino-helper",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "publisher": "minseokk7",
     "repository": {
         "type": "git",

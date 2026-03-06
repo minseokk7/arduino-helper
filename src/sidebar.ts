@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getBoardState } from './config';
+import { getState } from './config';
 
 export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
@@ -41,33 +41,53 @@ export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
             return;
         }
         
-        const state = getBoardState();
-        let fqbnLabel = 'No Board Selected';
-        if (state.fqbn) {
-            // e.g. "arduino:avr:uno" -> "arduino : avr : uno" or just show the fqbn
-            fqbnLabel = state.fqbn;
+        const state = getState();
+        let fqbnLabel = vscode.l10n.t('No Board Selected');
+        if (state.selectedBoardName) {
+            fqbnLabel = state.selectedBoardName;
         }
 
-        let portLabel = 'No Port Selected';
-        if (state.port) {
-            portLabel = state.port;
+        let portLabel = vscode.l10n.t('No Port Selected');
+        if (state.selectedPort) {
+            portLabel = state.selectedPort;
         }
 
         this._view.webview.postMessage({
             command: 'updateLabels',
             fqbn: fqbnLabel,
-            port: portLabel
+            port: portLabel,
+            noBoardText: vscode.l10n.t('No Board Selected'),
+            noPortText: vscode.l10n.t('No Port Selected')
         });
     }
 
     private _getHtmlForWebview(webview: vscode.Webview) {
+        // Localized Strings
+        const titleDashboard = vscode.l10n.t('Arduino Dashboard');
+        const lblCurrentBoard = vscode.l10n.t('Current Board');
+        const lblCurrentPort = vscode.l10n.t('Current Port (Click to Auto-detect)');
+        const lblActions = vscode.l10n.t('Actions');
+        const lblCompile = vscode.l10n.t('Compile');
+        const lblUpload = vscode.l10n.t('Upload');
+        const lblSerialMon = vscode.l10n.t('Serial Mon');
+        const lblPlotter = vscode.l10n.t('Plotter');
+        const lblManagement = vscode.l10n.t('Management');
+        const lblManagerDesc = vscode.l10n.t('Arduino Manager (Libraries / Boards)');
+        const lblCheckUpdates = vscode.l10n.t('Check for Updates');
+        const lblBrowseExamples = vscode.l10n.t('Browse Examples');
+        const lblNewSketch = vscode.l10n.t('New Sketch');
+        const tltCompile = vscode.l10n.t('Verify/Compile Sketch');
+        const tltUpload = vscode.l10n.t('Upload to Board');
+        const tltSerial = vscode.l10n.t('Open Serial Monitor');
+        const tltPlotter = vscode.l10n.t('Open Serial Plotter');
+
         // Modern Apple/Glassmorphism-inspired UI
         return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arduino Dashboard</title>
+    <title>${titleDashboard}</title>
     <style>
         :root {
             --arduino-teal: #00979C;
@@ -201,23 +221,19 @@ export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
             justify-content: flex-start;
             padding: 12px 16px;
         }
-
-        /* SVGs inline for icons */
-        .icon-compile { /* check */ }
-        .icon-upload { /* arrow-right */ }
     </style>
 </head>
 <body>
     <div class="status-card">
         <div class="status-row" style="cursor: pointer;" onclick="execute('arduino.selectBoardAndPort')">
-            <span class="status-label">Current Board</span>
+            <span class="status-label">${lblCurrentBoard}</span>
             <div class="status-value">
                 <div class="status-indicator" id="boardIndicator"></div>
                 <span id="boardName">Loading...</span>
             </div>
         </div>
         <div class="status-row" style="cursor: pointer;" onclick="execute('arduino.autoDetect')">
-            <span class="status-label">Current Port (Click to Auto-detect)</span>
+            <span class="status-label">${lblCurrentPort}</span>
             <div class="status-value">
                 <div class="status-indicator" id="portIndicator"></div>
                 <span id="portName">Loading...</span>
@@ -225,43 +241,43 @@ export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
         </div>
     </div>
 
-    <div class="section-title">Actions</div>
+    <div class="section-title">${lblActions}</div>
     <div class="btn-grid">
-        <button class="btn primary" onclick="execute('arduino.compile')" title="Verify/Compile Sketch">
+        <button class="btn primary" onclick="execute('arduino.compile')" title="${tltCompile}">
             <svg viewBox="0 0 16 16"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0z"/></svg>
-            Compile
+            ${lblCompile}
         </button>
-        <button class="btn primary" onclick="execute('arduino.upload')" title="Upload to Board">
+        <button class="btn primary" onclick="execute('arduino.upload')" title="${tltUpload}">
             <svg viewBox="0 0 16 16"><path d="M8 14V3.56l-3.22 3.22a.75.75 0 0 1-1.06-1.06l4.5-4.5a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 0 1-1.06 1.06L9 3.56V14a.75.75 0 0 1-1.5 0z"/></svg>
-            Upload
+            ${lblUpload}
         </button>
-        <button class="btn" onclick="execute('arduino.serialMonitor')" title="Open Serial Monitor">
+        <button class="btn" onclick="execute('arduino.serialMonitor')" title="${tltSerial}">
             <svg viewBox="0 0 16 16"><path d="M2.5 3h11c.82 0 1.5.68 1.5 1.5v7c0 .82-.68 1.5-1.5 1.5h-11A1.5 1.5 0 0 1 1 11.5v-7C1 3.68 1.68 3 2.5 3zm11 1.5h-11v5h11v-5zM2.5 11h11v.5h-11V11zM4 6.5l3 3 1.5-1.5M4 8.5h4"/></svg>
-            Serial Mon
+            ${lblSerialMon}
         </button>
-        <button class="btn" onclick="execute('arduino.serialPlotter')" title="Open Serial Plotter">
+        <button class="btn" onclick="execute('arduino.serialPlotter')" title="${tltPlotter}">
             <svg viewBox="0 0 16 16"><path d="M1 2v13h13V2H1zm12 12H2V3h11v11z"/><path d="M3 11l3-4 2 2 4-5v2l-4 5-2-2-3 4H3z"/></svg>
-            Plotter
+            ${lblPlotter}
         </button>
     </div>
 
-    <div class="section-title">Management</div>
+    <div class="section-title">${lblManagement}</div>
     <div class="btn-grid">
         <button class="btn full-width" onclick="execute('arduino.managerGUI')" style="justify-content: center;">
             <svg viewBox="0 0 16 16" style="margin-right: 4px;"><path d="M2 1h12a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zm0 1v12h12V2H2zm1 2h10v2H3V4zm0 4h10v2H3V8zm0 4h6v2H3v-2z"/></svg>
-            Arduino Manager (Libraries / Boards)
+            ${lblManagerDesc}
         </button>
         <button class="btn full-width" onclick="execute('arduino.updateAll')" style="justify-content: center;">
             <svg viewBox="0 0 16 16" style="margin-right: 4px;"><path d="M8 1a7 7 0 1 0 7 7H14A6 6 0 1 1 8 2V1zm.5 2v4.25l3.19 3.19-.71.71L7.5 7.66V3h1z"/></svg>
-            Check for Updates
+            ${lblCheckUpdates}
         </button>
         <button class="btn full-width" onclick="execute('arduino.openExample')" style="justify-content: center;">
             <svg viewBox="0 0 16 16" style="margin-right: 4px;"><path d="M3 1v14h10V5l-4-4H3zm1 1h4v4h4v9H4V2zm5.5 1.21L11.79 5H9.5V3.21z"/></svg>
-            Browse Examples
+            ${lblBrowseExamples}
         </button>
         <button class="btn full-width" onclick="execute('arduino.newSketch')" style="justify-content: center;">
             <svg viewBox="0 0 16 16" style="margin-right: 4px;"><path d="M8 2v12m-6-6h12" stroke="currentColor" stroke-width="1.5"/></svg>
-            New Sketch
+            ${lblNewSketch}
         </button>
     </div>
 
@@ -286,10 +302,10 @@ export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
                 boardName.textContent = message.fqbn;
                 portName.textContent = message.port;
 
-                if (message.fqbn !== 'No Board Selected') boardInd.classList.add('active');
+                if (message.fqbn !== message.noBoardText) boardInd.classList.add('active');
                 else boardInd.classList.remove('active');
 
-                if (message.port !== 'No Port Selected') portInd.classList.add('active');
+                if (message.port !== message.noPortText) portInd.classList.add('active');
                 else portInd.classList.remove('active');
             }
         });
