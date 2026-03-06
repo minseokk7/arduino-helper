@@ -12,6 +12,12 @@ import * as path from 'path';
 /** 컴파일 에러를 담을 DiagnosticCollection */
 let diagnosticCollection: vscode.DiagnosticCollection;
 
+/** 메모리 사용량 파싱 결과 방출을 위한 이벤트 */
+export const onDidCompile = new vscode.EventEmitter<{
+    flashCurrent: number; flashMax: number;
+    ramCurrent: number; ramMax: number;
+} | undefined>();
+
 /** 출력 채널 */
 let outputChannel: vscode.OutputChannel;
 
@@ -133,6 +139,22 @@ export async function compile(): Promise<boolean> {
                     outputChannel.appendLine('─'.repeat(60));
                     outputChannel.appendLine(`✅ ${vscode.l10n.t('Compile successful!')}`);
 
+                    // 메모리 파싱 (예: "Sketch uses 444 bytes (1%) of program storage space. Maximum is 32256 bytes.")
+                    const flashMatch = result.stdout.match(/uses (\d+) bytes[^(]*\(([^%]+)%\).*?Maximum is (\d+) bytes/);
+                    const ramMatch = result.stdout.match(/use (\d+) bytes[^(]*\(([^%]+)%\).*?Maximum is (\d+) bytes/);
+                    
+                    if (flashMatch && ramMatch) {
+                        onDidCompile.fire({
+                            flashCurrent: parseInt(flashMatch[1], 10),
+                            flashMax: parseInt(flashMatch[3], 10),
+                            ramCurrent: parseInt(ramMatch[1], 10),
+                            ramMax: parseInt(ramMatch[3], 10)
+                        });
+                    } else {
+                        // 파싱 실패 또는 출력 형식이 다를 경우
+                        onDidCompile.fire(undefined);
+                    }
+
                     // 컴파일 성공 시 IntelliSense 업데이트
                     import('./intellisense').then(m => m.updateIntelliSense().catch(() => { }));
 
@@ -140,6 +162,7 @@ export async function compile(): Promise<boolean> {
                 } else {
                     outputChannel.appendLine('─'.repeat(60));
                     outputChannel.appendLine(`❌ ${vscode.l10n.t('Compile failed')}`);
+                    onDidCompile.fire(undefined);
 
                     // 에러 파싱 및 Diagnostics 등록
                     const fullOutput = `${result.stdout}\n${result.stderr}`;

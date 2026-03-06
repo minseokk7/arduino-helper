@@ -159,6 +159,14 @@
     "Upgrading cores...": "Upgrading cores...",
     "Upgrading libraries...": "Upgrading libraries...",
     "Done.": "Done.",
-    "Arduino: Successfully updated all cores and libraries.": "Arduino: Successfully updated all cores and libraries.",
-    "Arduino: Update failed. {0}": "Arduino: Update failed. {0}"
+    "Arduino: Update failed. {0}": "Arduino: Update failed. {0}",
+    "Memory Usage": "Memory Usage",
+    "Flash": "Flash",
+    "RAM": "RAM",
+    "Missing Arduino libraries found in arduino.json: {0}. Install them now?": "Missing Arduino libraries found in arduino.json: {0}. Install them now?",
+    "Ignore": "Ignore",
+    "Installing missing libraries from arduino.json...": "Installing missing libraries from arduino.json...",
+    "Installing Arduino libraries...": "Installing Arduino libraries...",
+    "Done installing dependencies.": "Done installing dependencies.",
+    "Library installation complete.": "Library installation complete."
 }

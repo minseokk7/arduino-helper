@@ -159,6 +159,14 @@
     "Upgrading cores...": "보드 코어 패키지 업그레이드 중...",
     "Upgrading libraries...": "라이브러리 패키지 업그레이드 중...",
     "Done.": "완료.",
-    "Arduino: Successfully updated all cores and libraries.": "Arduino: 모든 코어와 라이브러리가 성공적으로 최신 버전으로 업데이트되었습니다.",
-    "Arduino: Update failed. {0}": "Arduino: 업데이트에 실패했습니다. {0}"
+    "Arduino: Update failed. {0}": "Arduino: 업데이트에 실패했습니다. {0}",
+    "Memory Usage": "보드 메모리 사용량 (Memory Usage)",
+    "Flash": "플래시 메모리 (Flash)",
+    "RAM": "동적 메모리 (RAM)",
+    "Missing Arduino libraries found in arduino.json: {0}. Install them now?": "arduino.json에 정의된 필수 라이브러리가 설치되어 있지 않습니다: {0}. 지금 모두 설치할까요?",
+    "Ignore": "나중에 (무시)",
+    "Installing missing libraries from arduino.json...": "arduino.json에 정의된 누락 라이브러리 설치 중...",
+    "Installing Arduino libraries...": "아두이노 패키지 자동 설치...",
+    "Done installing dependencies.": "필수 라이브러리 검사 및 설치가 완료되었습니다.",
+    "Library installation complete.": "라이브러리 자동 설치가 완료되었습니다."
 }

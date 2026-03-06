@@ -1,21 +1,22 @@
 import * as vscode from 'vscode';
 import { getState } from './config';
+import { onDidCompile } from './compiler';
 
 export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
 
-    constructor(private readonly _extensionUri: vscode.Uri) {}
+    constructor(private readonly _context: vscode.ExtensionContext) {}
 
     public resolveWebviewView(
         webviewView: vscode.WebviewView,
-        context: vscode.WebviewViewResolveContext,
+        webviewContext: vscode.WebviewViewResolveContext,
         _token: vscode.CancellationToken
     ) {
         this._view = webviewView;
 
         webviewView.webview.options = {
             enableScripts: true,
-            localResourceRoots: [this._extensionUri]
+            localResourceRoots: [this._context.extensionUri]
         };
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
@@ -34,6 +35,18 @@ export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
 
         // Initialize state
         this.updateState();
+
+        // Listen for compile memory statistics
+        this._context.subscriptions.push(
+            onDidCompile.event(mem => {
+                if (this._view) {
+                    this._view.webview.postMessage({
+                        command: 'updateMemory',
+                        memory: mem
+                    });
+                }
+            })
+        );
     }
 
     public updateState() {
@@ -80,6 +93,9 @@ export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
         const tltUpload = vscode.l10n.t('Upload to Board');
         const tltSerial = vscode.l10n.t('Open Serial Monitor');
         const tltPlotter = vscode.l10n.t('Open Serial Plotter');
+        const lblMemoryUsage = vscode.l10n.t('Memory Usage');
+        const lblFlash = vscode.l10n.t('Flash');
+        const lblRAM = vscode.l10n.t('RAM');
 
         // Modern Apple/Glassmorphism-inspired UI
         return `<!DOCTYPE html>
@@ -155,6 +171,47 @@ export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
         .status-indicator.active {
             background-color: var(--arduino-teal);
             box-shadow: 0 0 8px rgba(0, 151, 156, 0.6);
+        }
+
+        /* Memory Bars */
+        .memory-section {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 16px;
+            display: none; /* Hidden until compile finishes */
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .memory-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .memory-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--arduino-teal);
+            width: 0%;
+            transition: width 0.5s ease-out, background-color 0.3s ease;
         }
 
         /* Action Buttons */
@@ -241,6 +298,28 @@ export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
         </div>
     </div>
 
+    <div class="memory-section" id="memorySection">
+        <div class="section-title" style="margin-bottom: 0px;">${lblMemoryUsage}</div>
+        <div class="memory-row">
+            <div class="memory-header">
+                <span>${lblFlash}</span>
+                <span id="flashText">0%</span>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill" id="flashBar"></div>
+            </div>
+        </div>
+        <div class="memory-row">
+            <div class="memory-header">
+                <span>${lblRAM}</span>
+                <span id="ramText">0%</span>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill" id="ramBar"></div>
+            </div>
+        </div>
+    </div>
+
     <div class="section-title">${lblActions}</div>
     <div class="btn-grid">
         <button class="btn primary" onclick="execute('arduino.compile')" title="${tltCompile}">
@@ -307,6 +386,35 @@ export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
 
                 if (message.port !== message.noPortText) portInd.classList.add('active');
                 else portInd.classList.remove('active');
+            } else if (message.command === 'updateMemory') {
+                const memSection = document.getElementById('memorySection');
+                
+                if (!message.memory) {
+                    // Compilation failed or no metrics
+                    memSection.style.display = 'none';
+                    return;
+                }
+
+                memSection.style.display = 'flex';
+                
+                const m = message.memory;
+                const flashPct = (m.flashCurrent / m.flashMax) * 100;
+                const ramPct = (m.ramCurrent / m.ramMax) * 100;
+
+                const flashBar = document.getElementById('flashBar');
+                const ramBar = document.getElementById('ramBar');
+                const flashText = document.getElementById('flashText');
+                const ramText = document.getElementById('ramText');
+
+                flashBar.style.width = flashPct + '%';
+                ramBar.style.width = ramPct + '%';
+
+                flashText.textContent = \`\${m.flashCurrent} / \${m.flashMax} bytes (\${flashPct.toFixed(1)}%)\`;
+                ramText.textContent = \`\${m.ramCurrent} / \${m.ramMax} bytes (\${ramPct.toFixed(1)}%)\`;
+
+                // Change color if approaching limits
+                flashBar.style.backgroundColor = flashPct > 90 ? '#e06c75' : flashPct > 75 ? '#e5c07b' : 'var(--arduino-teal)';
+                ramBar.style.backgroundColor = ramPct > 90 ? '#e06c75' : ramPct > 75 ? '#e5c07b' : 'var(--arduino-teal)';
             }
         });
 

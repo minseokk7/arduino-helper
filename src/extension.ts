@@ -10,7 +10,7 @@ import { checkCliInstalled } from './arduino-cli';
 import { selectBoard, autoDetectBoardAndPort } from './board-manager';
 import { initCompiler, compile } from './compiler';
 import { upload } from './uploader';
-import { openSerialMonitor, closeSerialMonitor, sendDataToSerialMonitor } from './serial-monitor';
+import { openSerialMonitor, closeSerialMonitor, sendDataToSerialMonitor, exportSerialLog } from './serial-monitor';
 import { installLibrary, installCore } from './library-manager';
 import { initStatusBar, updateStatusBar } from './status-bar';
 import { updateState, loadWorkspaceState, getState } from './config';
@@ -22,6 +22,7 @@ import { openSerialPlotter } from './webviews/serial-plotter';
 import { openManagerGUI } from './webviews/manager-gui';
 import { generateDebugConfig } from './debugger';
 import { updateAll } from './updater';
+import { checkAndInstallDependencies } from './dependency-manager';
 
 /**
  * 확장이 활성화될 때 호출됩니다.
@@ -63,12 +64,15 @@ export async function activate(
         updateAll().catch(e => console.error('Auto update failed:', e));
     }
 
+    // arduino.json을 스캔하여 누락된 라이브러리 자동 설치
+    checkAndInstallDependencies();
+
     // 컴파일러 및 상태바 초기화
     initCompiler(context);
     initStatusBar(context);
 
     // 사이드바 등록 (Webview)
-    const sidebarProvider = new ArduinoSidebarProvider(context.extensionUri);
+    const sidebarProvider = new ArduinoSidebarProvider(context);
     vscode.window.registerWebviewViewProvider('arduino-sidebar', sidebarProvider);
 
     // 환경설정(Board, Port)이 바뀔 때 사이드바 웹뷰도 업데이트
@@ -134,6 +138,10 @@ export async function activate(
             {
                 "id": "arduino.generateDebugConfig",
                 "handler": generateDebugConfig,
+            },
+            {
+                id: 'arduino.exportSerialLog',
+                handler: exportSerialLog,
             },
             {
                 id: 'arduino.installLibrary',

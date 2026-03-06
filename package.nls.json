@@ -18,5 +18,8 @@
     "config.cliPath.description": "Path to arduino-cli executable (use default if in PATH)",
     "config.defaultBaudRate.description": "Default baud rate for serial monitor",
     "config.autoDetectBoard.description": "Auto-detect board on USB connection",
-    "config.autoUpdate.description": "Automatically check and update installed cores and libraries on extension startup"
+    "config.autoUpdate.description": "Automatically check and update installed cores and libraries on extension startup",
+    "command.exportSerialLog": "Arduino: Export Serial Log",
+    "config.serialTimestamps.description": "Prepend a [YYYY-MM-DD HH:MM:SS.mmm] timestamp to each line received from the Serial Monitor.",
+    "config.serialHexView.description": "Display Serial Monitor data in Hex view instead of UTF-8 text."
 }

@@ -14,9 +14,12 @@
     "command.installCore": "Arduino: 코어 설치 (Install Core)",
     "command.autoDetect": "Arduino: 보드/포트 자동 감지 (Auto-detect)",
     "command.openExample": "Arduino: 예제 열기 (Open Example)",
-    "command.updateAll": "Arduino: 보드/라이브러리 모두 업데이트 (Update All)",
+    "command.updateAll": "Arduino: 설치된 코어 및 라이브러리 전체 갱신/업데이트",
     "config.cliPath.description": "arduino-cli 실행 파일 경로 (PATH에 있으면 기본값 사용)",
     "config.defaultBaudRate.description": "시리얼 모니터 기본 보드레이트",
-    "config.autoDetectBoard.description": "USB 연결 시 보드 자동 감지 여부",
-    "config.autoUpdate.description": "확장 프로그램 시작 시 설치된 코어(보드) 및 라이브러리 자동 업데이트 검사 및 설치 여부"
+    "config.autoDetectBoard.description": "true일 경우, 자동 감지 명령 실행 시 연결된 아두이노를 찾아 자동으로 포트와 보드를 선택합니다.",
+    "config.autoUpdate.description": "VS Code 실행 시 백그라운드 환경에서 'updateAll'을 자동으로 실행하여 패키지를 항상 최신으로 유지합니다.",
+    "command.exportSerialLog": "Arduino: 시리얼 모니터 로그 텍스트 내보내기",
+    "config.serialTimestamps.description": "시리얼 모니터에서 수신한 각 데이터의 줄 맨 앞에 수신 시간(타임스탬프)을 추가하여 기록합니다.",
+    "config.serialHexView.description": "수신된 시리얼 데이터를 텍스트(UTF-8) 형식 대신 16진수(Hex) 데이터 뷰로 출력합니다."
 }

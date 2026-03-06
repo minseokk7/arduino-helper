@@ -13,6 +13,9 @@ export let monitorTerminal: vscode.Terminal | undefined;
 /** 내부 arduino-cli 프로세스 */
 let monitorProcess: ChildProcess | undefined;
 
+/** 내보내기용 시리얼 로그 버퍼 (최대 5000 청크 유지) */
+export const serialLogBuffer: string[] = [];
+
 
 /**
  * 시리얼 모니터를 엽니다.
@@ -125,12 +128,38 @@ export async function sendDataToSerialMonitor(): Promise<void> {
 }
 
 /**
+ * 시리얼 로그를 파일로 내보냅니다.
+ */
+export async function exportSerialLog(): Promise<void> {
+    if (serialLogBuffer.length === 0) {
+        vscode.window.showInformationMessage(vscode.l10n.t('Serial log is empty.'));
+        return;
+    }
+
+    const uri = await vscode.window.showSaveDialog({
+        saveLabel: vscode.l10n.t('Export'),
+        filters: {
+            'Text Files': ['txt', 'csv', 'log'],
+            'All Files': ['*']
+        },
+        defaultUri: vscode.Uri.file('arduino_serial_log.txt')
+    });
+
+    if (uri) {
+        const content = serialLogBuffer.join('');
+        await vscode.workspace.fs.writeFile(uri, Buffer.from(content, 'utf8'));
+        vscode.window.showInformationMessage(vscode.l10n.t('Serial log exported successfully!'));
+    }
+}
+
+/**
  * Pseudoterminal (가상 터미널) 제어 객체
  * VS Code의 터미널 UI와 Node.js의 ChildProcess 연결
  */
 class SerialMonitorPty implements vscode.Pseudoterminal {
     private writeEmitter = new vscode.EventEmitter<string>();
     private closeEmitter = new vscode.EventEmitter<number>();
+    private isNewLine = true;
 
     onDidWrite: vscode.Event<string> = this.writeEmitter.event;
     onDidClose?: vscode.Event<number> = this.closeEmitter.event;
@@ -146,13 +175,49 @@ class SerialMonitorPty implements vscode.Pseudoterminal {
         });
 
         monitorProcess.stdout?.on('data', (data: Buffer) => {
-            const str = data.toString();
-            // 터미널에는 줄바꿈 보정을 위해 LF를 CRLF로 변경하여 출력
-            this.writeEmitter.fire(str.replace(/\r?\n/g, '\r\n'));
+            const vscodeConfig = vscode.workspace.getConfiguration('arduino');
+            const useHex = vscodeConfig.get<boolean>('serialHexView', false);
+            const useTimestamps = vscodeConfig.get<boolean>('serialTimestamps', false);
 
-            // 시리얼 플로터로 데이터 브로드캐스트 (가공하지 않은 원시 문자열)
-            // Plotter쪽에서 줄바꿈을 알아서 파싱합니다.
-            sendDataToPlotter(str);
+            let outputStr = '';
+
+            if (useHex) {
+                // Hex 뷰: 0A 1F 2B 형식
+                outputStr = Array.from(data).map(b => b.toString(16).padStart(2, '0').toUpperCase()).join(' ') + ' ';
+            } else {
+                const str = data.toString();
+                if (useTimestamps) {
+                    const now = new Date();
+                    const ts = `\x1b[90m[${now.toISOString().replace('T', ' ').replace('Z', '')}]\x1b[0m `;
+                    
+                    // 청크 단위 데이터에서 줄바꿈 이후에만 타임스탬프가 붙도록 처리
+                    for (let i = 0; i < str.length; i++) {
+                        if (this.isNewLine) {
+                            outputStr += ts;
+                            this.isNewLine = false;
+                        }
+                        outputStr += str[i];
+                        if (str[i] === '\n') {
+                            this.isNewLine = true;
+                        }
+                    }
+                } else {
+                    outputStr = str;
+                }
+            }
+
+            // 저장용 버퍼에 추가 (ANSI 컬러 코드 제거)
+            const plainText = outputStr.replace(/\x1b\[[0-9;]*m/g, '');
+            serialLogBuffer.push(plainText);
+            if (serialLogBuffer.length > 5000) {
+                serialLogBuffer.shift();
+            }
+
+            // 터미널에는 줄바꿈 보정을 위해 LF를 CRLF로 변경하여 출력
+            this.writeEmitter.fire(outputStr.replace(/\r?\n/g, '\r\n'));
+
+            // 시리얼 플로터로 데이터 브로드캐스트 (기존 문자열 그대로)
+            sendDataToPlotter(data.toString());
         });
 
         monitorProcess.stderr?.on('data', (data: Buffer) => {
