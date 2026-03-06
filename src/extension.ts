@@ -204,12 +204,27 @@ async function newSketch(): Promise<void> {
         return;
     }
 
-    const sketchDir = path.join(targetFolder[0].fsPath, sketchName);
+    // Arduino 스타일: 폴더명과 .ino 파일명이 같아야 함.
+    // 만약 사용자가 이미 폴더를 만들어놓고 그 폴더를 선택했다면, 또 하위 폴더를 만들지 않도록 함.
+    const selectedPath = targetFolder[0].fsPath;
+    const isAlreadySketchFolder = path.basename(selectedPath).toLowerCase() === sketchName.toLowerCase();
+    
+    const sketchDir = isAlreadySketchFolder ? selectedPath : path.join(selectedPath, sketchName);
     const sketchFile = path.join(sketchDir, `${sketchName}.ino`);
 
-    // 디렉토리 생성
+    // 파일 중복 체크
+    if (fs.existsSync(sketchFile)) {
+        vscode.window.showErrorMessage(
+            vscode.l10n.t('A sketch with this name already exists in the selected location: {0}', sketchFile)
+        );
+        return;
+    }
+
+    // 디렉토리 생성 (이미 존재하면 건너뜀)
     try {
-        fs.mkdirSync(sketchDir, { recursive: true });
+        if (!fs.existsSync(sketchDir)) {
+            fs.mkdirSync(sketchDir, { recursive: true });
+        }
     } catch (error) {
         const message =
             error instanceof Error ? error.message : vscode.l10n.t('Unknown error');
