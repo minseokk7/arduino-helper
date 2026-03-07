@@ -12,6 +12,11 @@ import * as path from 'path';
 /** 컴파일 에러를 담을 DiagnosticCollection */
 let diagnosticCollection: vscode.DiagnosticCollection;
 
+export let lastCompileMemory: {
+    flashCurrent: number; flashMax: number;
+    ramCurrent: number; ramMax: number;
+} | undefined = undefined;
+
 /** 메모리 사용량 파싱 결과 방출을 위한 이벤트 */
 export const onDidCompile = new vscode.EventEmitter<{
     flashCurrent: number; flashMax: number;
@@ -147,14 +152,16 @@ export async function compile(): Promise<boolean> {
                     const ramMatch = result.stdout.match(ramRegex);
                     
                     if (flashMatch && ramMatch) {
-                        onDidCompile.fire({
+                        lastCompileMemory = {
                             flashCurrent: parseInt(flashMatch[1], 10),
                             flashMax: parseInt(flashMatch[3], 10),
                             ramCurrent: parseInt(ramMatch[1], 10),
                             ramMax: parseInt(ramMatch[3], 10)
-                        });
+                        };
+                        onDidCompile.fire(lastCompileMemory);
                     } else {
                         // 파싱 실패 또는 출력 형식이 다를 경우
+                        lastCompileMemory = undefined;
                         onDidCompile.fire(undefined);
                     }
 
