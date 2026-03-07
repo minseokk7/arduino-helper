@@ -2,7 +2,7 @@
     "name": "arduino-helper",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "0.6.11",
+    "version": "0.6.12",
     "publisher": "minseokk7",
     "repository": {
         "type": "git",
@@ -134,12 +134,12 @@
             "editor/title": [
                 {
                     "command": "arduino.compile",
-                    "when": "resourceLangId == arduino",
+                    "when": "resourceExtname == .ino",
                     "group": "navigation@1"
                 },
                 {
                     "command": "arduino.upload",
-                    "when": "resourceLangId == arduino",
+                    "when": "resourceExtname == .ino",
                     "group": "navigation@2"
                 }
             ]
@@ -178,19 +178,7 @@
                     "description": "%config.serialHexView.description%"
                 }
             }
-        },
-        "languages": [
-            {
-                "id": "arduino",
-                "aliases": [
-                    "Arduino",
-                    "arduino"
-                ],
-                "extensions": [
-                    ".ino"
-                ]
-            }
-        ]
+        }
     },
     "scripts": {
         "compile": "node esbuild.js",
