@@ -6,3 +6,5 @@ esbuild.js
 **/*.ts
 **/*.map
 .gitignore
+.env*
+error*.txt
