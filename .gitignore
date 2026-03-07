@@ -20,3 +20,6 @@ Thumbs.db
 # IDE 설정
 .vscode/
 !.vscode/extensions.json
+
+# 보안 및 환경 변수
+.env*
