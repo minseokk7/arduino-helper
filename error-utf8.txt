@@ -1,0 +1,42 @@
+﻿node.exe : ❌  Extens
+ion publication bloc
+ked: Potential secre
+t found in extension
+/.env.local:1 (rule:
+ openvsx-pat-prefixe
+d, entropy: 4.144418
+): ovs***454. For de
+tails on publishing 
+extensions, see: htt
+ps://github.com/ecli
+pse/openvsx/wiki/Pub
+lishing-Extensions
+위치 C:\Users\minse\Ap
+pData\Roaming\npm\np
+x.ps1:24 문자:5
++     & "node$exe"  
+"$basedir/node_modul
+es/npm/bin/npx-cli.j
+s" $args
++     ~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo  
+            : NotS  
+  pecified: (❌  E   
+ xtension pu...h    
+ing-Extensions:    S
+tring) [], Rem    ot
+eException
+    + FullyQualifie 
+   dErrorId : Nati  
+  veCommandError
+ 
+See the documentatio
+n for more informati
+on:
+https://github.com/e
+clipse/openvsx/wiki/
+Publishing-Extension
+s

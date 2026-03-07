@@ -133,8 +133,7 @@ export async function compile(): Promise<boolean> {
                 const workspacePath = wFolders && wFolders.length > 0 ? wFolders[0].uri.fsPath : sketchPath;
                 const buildPath = path.join(workspacePath, '.vscode', 'build');
 
-                const args = ['compile', '--fqbn', state.selectedFqbn!, '--dump-profile', '--build-path', buildPath, sketchPath];
-
+                const args = ['compile', '--fqbn', state.selectedFqbn!, '--build-path', buildPath, sketchPath];
                 const result = await runCli(
                     args,
                     {
