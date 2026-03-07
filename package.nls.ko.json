@@ -21,5 +21,6 @@
     "config.autoUpdate.description": "VS Code 실행 시 백그라운드 환경에서 'updateAll'을 자동으로 실행하여 패키지를 항상 최신으로 유지합니다.",
     "command.exportSerialLog": "Arduino: 시리얼 모니터 로그 텍스트 내보내기",
     "config.serialTimestamps.description": "시리얼 모니터에서 수신한 각 데이터의 줄 맨 앞에 수신 시간(타임스탬프)을 추가하여 기록합니다.",
-    "config.serialHexView.description": "수신된 시리얼 데이터를 텍스트(UTF-8) 형식 대신 16진수(Hex) 데이터 뷰로 출력합니다."
+    "config.serialHexView.description": "수신된 시리얼 데이터를 텍스트(UTF-8) 형식 대신 16진수(Hex) 데이터 뷰로 출력합니다.",
+    "command.setSketchLocation": "Arduino: 스케치 기본 저장 위치 설정"
 }

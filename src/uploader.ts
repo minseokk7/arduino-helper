@@ -82,6 +82,11 @@ export async function upload(): Promise<void> {
                     outputChannel.appendLine(vscode.l10n.t('Disconnected Serial Monitor for upload...'));
                 }
 
+                // 업로드 후 시리얼 모니터 재연결 전, 빌드 경로 가져오기
+                const wFolders = vscode.workspace.workspaceFolders;
+                const workspacePath = wFolders && wFolders.length > 0 ? wFolders[0].uri.fsPath : sketchPath;
+                const buildPath = path.join(workspacePath, '.vscode', 'build');
+
                 const result = await runCli(
                     [
                         'upload',
@@ -89,6 +94,8 @@ export async function upload(): Promise<void> {
                         state.selectedPort!,
                         '--fqbn',
                         state.selectedFqbn!,
+                        '--input-dir',
+                        buildPath,
                         sketchPath,
                     ],
                     {

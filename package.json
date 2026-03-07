@@ -2,7 +2,7 @@
     "name": "arduino-helper",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "0.6.3",
+    "version": "0.6.4",
     "publisher": "minseokk7",
     "repository": {
         "type": "git",
@@ -104,6 +104,11 @@
                 "command": "arduino.exportSerialLog",
                 "title": "%command.exportSerialLog%",
                 "icon": "$(save)"
+            },
+            {
+                "command": "arduino.setSketchLocation",
+                "title": "%command.setSketchLocation%",
+                "category": "Arduino"
             }
         ],
         "viewsContainers": {
@@ -192,14 +197,17 @@
         "compile": "node esbuild.js",
         "watch": "node esbuild.js --watch",
         "package": "npx @vscode/vsce package --no-dependencies",
-        "lint": "eslint src --ext ts",
+        "lint": "eslint \"src/**/*.ts\"",
         "build:strict": "tsc --noEmit && node esbuild.js",
         "vscode:prepublish": "npm run build:strict"
     },
     "devDependencies": {
+        "@eslint/js": "^10.0.1",
         "@types/node": "^20.0.0",
         "@types/vscode": "^1.85.0",
         "esbuild": "^0.24.0",
-        "typescript": "^5.5.0"
+        "eslint": "^10.0.3",
+        "typescript": "^5.5.0",
+        "typescript-eslint": "^8.56.1"
     }
 }

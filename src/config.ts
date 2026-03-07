@@ -28,6 +28,8 @@ export interface ArduinoState {
     selectedBoardName: string | undefined;
     /** 런타임에 다운로드한 arduino-cli 경로 (설정보다 우선함) */
     downloadedCliPath: string | undefined;
+    /** 마지막으로 선택한 스케치 생성 위치 */
+    defaultSketchPath: string | undefined;
 }
 
 /** 전역 런타임 상태 */
@@ -36,6 +38,7 @@ const state: ArduinoState = {
     selectedPort: undefined,
     selectedBoardName: undefined,
     downloadedCliPath: undefined,
+    defaultSketchPath: undefined,
 };
 
 /**
@@ -123,7 +126,8 @@ export function saveWorkspaceState(): void {
         const stateToSave = {
             selectedFqbn: state.selectedFqbn,
             selectedPort: state.selectedPort,
-            selectedBoardName: state.selectedBoardName
+            selectedBoardName: state.selectedBoardName,
+            defaultSketchPath: state.defaultSketchPath
         };
 
         fs.writeFileSync(settingsFile, JSON.stringify(stateToSave, null, 4), 'utf8');

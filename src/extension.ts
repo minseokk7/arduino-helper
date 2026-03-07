@@ -4,25 +4,17 @@
  * 모든 명령어를 등록하고 확장의 생명주기를 관리합니다.
  */
 import * as vscode from 'vscode';
-import * as path from 'path';
-import * as fs from 'fs';
 import { checkCliInstalled } from './arduino-cli';
-import { selectBoard, autoDetectBoardAndPort } from './board-manager';
-import { initCompiler, compile } from './compiler';
-import { upload } from './uploader';
-import { openSerialMonitor, closeSerialMonitor, sendDataToSerialMonitor, exportSerialLog } from './serial-monitor';
-import { installLibrary, installCore } from './library-manager';
-import { initStatusBar, updateStatusBar } from './status-bar';
-import { updateState, loadWorkspaceState, getState } from './config';
+import { initCompiler } from './compiler';
+import { closeSerialMonitor } from './serial-monitor';
+import { initStatusBar } from './status-bar';
+import { updateState, loadWorkspaceState } from './config';
 import { ArduinoSidebarProvider } from './sidebar';
-import { openExample } from './examples-manager';
 import { installCliIfNeeded } from './auto-download';
 import { ArduinoTaskProvider } from './task-provider';
-import { openSerialPlotter } from './webviews/serial-plotter';
-import { openManagerGUI } from './webviews/manager-gui';
-import { generateDebugConfig } from './debugger';
 import { updateAll } from './updater';
 import { checkAndInstallDependencies } from './dependency-manager';
+import { registerCommands } from './command-dispatcher';
 
 /**
  * 확장이 활성화될 때 호출됩니다.
@@ -89,188 +81,8 @@ export async function activate(
     );
     context.subscriptions.push(taskProvider);
 
-    // 명령어 등록
-    const commands: Array<{
-        id: string;
-        handler: (...args: unknown[]) => unknown;
-    }> = [
-            {
-                id: 'arduino.selectBoard',
-                handler: async () => {
-                    await selectBoard();
-                    updateStatusBar();
-                    sidebarProvider.updateState();
-                },
-            },
-
-            {
-                id: 'arduino.autoDetect',
-                handler: async () => {
-                    await autoDetectBoardAndPort();
-                    updateStatusBar();
-                    sidebarProvider.updateState();
-                }
-            },
-            {
-                id: 'arduino.compile',
-                handler: compile,
-            },
-            {
-                id: 'arduino.upload',
-                handler: upload,
-            },
-            {
-                "id": "arduino.serialMonitor",
-                "handler": openSerialMonitor,
-            },
-            {
-                "id": "arduino.serialPlotter",
-                "handler": () => openSerialPlotter(context),
-            },
-            {
-                "id": "arduino.managerGUI",
-                "handler": () => openManagerGUI(context),
-            },
-            {
-                "id": "arduino.sendToSerial",
-                handler: sendDataToSerialMonitor,
-            },
-            {
-                "id": "arduino.generateDebugConfig",
-                "handler": generateDebugConfig,
-            },
-            {
-                id: 'arduino.exportSerialLog',
-                handler: exportSerialLog,
-            },
-            {
-                id: 'arduino.installLibrary',
-                handler: installLibrary,
-            },
-            {
-                id: 'arduino.newSketch',
-                handler: newSketch,
-            },
-            {
-                id: 'arduino.installCore',
-                handler: installCore,
-            },
-            {
-                id: 'arduino.openExample',
-                handler: openExample,
-            }
-        ];
-
-    for (const cmd of commands) {
-        const disposable = vscode.commands.registerCommand(cmd.id, cmd.handler);
-        context.subscriptions.push(disposable);
-    }
-}
-
-/**
- * 새 Arduino 스케치를 생성합니다.
- */
-async function newSketch(): Promise<void> {
-    // 스케치 이름 입력
-    const sketchName = await vscode.window.showInputBox({
-        prompt: vscode.l10n.t('Enter sketch name'),
-        placeHolder: vscode.l10n.t('e.g.: Blink, ServoTest, SensorReader'),
-        validateInput: (value) => {
-            if (!value) {
-                return vscode.l10n.t('Please enter a sketch name');
-            }
-            if (!/^[a-zA-Z][a-zA-Z0-9_]*$/.test(value)) {
-                return vscode.l10n.t('Only letters, numbers, underscores allowed (must start with a letter)');
-            }
-            return null;
-        },
-    });
-
-    if (!sketchName) {
-        return;
-    }
-
-    // 스케치 위치 선택
-    const defaultUri = vscode.workspace.workspaceFolders?.[0]?.uri;
-    const targetFolder = await vscode.window.showOpenDialog({
-        canSelectFiles: false,
-        canSelectFolders: true,
-        canSelectMany: false,
-        openLabel: vscode.l10n.t('Select sketch creation location'),
-        defaultUri,
-    });
-
-    if (!targetFolder || targetFolder.length === 0) {
-        return;
-    }
-
-    // Arduino 스타일: 폴더명과 .ino 파일명이 같아야 함.
-    // 만약 사용자가 이미 폴더를 만들어놓고 그 폴더를 선택했다면, 또 하위 폴더를 만들지 않도록 함.
-    const selectedPath = targetFolder[0].fsPath;
-    const isAlreadySketchFolder = path.basename(selectedPath).toLowerCase() === sketchName.toLowerCase();
-    
-    const sketchDir = isAlreadySketchFolder ? selectedPath : path.join(selectedPath, sketchName);
-    const sketchFile = path.join(sketchDir, `${sketchName}.ino`);
-
-    // 파일 중복 체크
-    if (fs.existsSync(sketchFile)) {
-        vscode.window.showErrorMessage(
-            vscode.l10n.t('A sketch with this name already exists in the selected location: {0}', sketchFile)
-        );
-        return;
-    }
-
-    // 디렉토리 생성 (이미 존재하면 건너뜀)
-    try {
-        if (!fs.existsSync(sketchDir)) {
-            fs.mkdirSync(sketchDir, { recursive: true });
-        }
-    } catch (error) {
-        const message =
-            error instanceof Error ? error.message : vscode.l10n.t('Unknown error');
-        vscode.window.showErrorMessage(vscode.l10n.t('Failed to create sketch folder: {0}', message));
-        return;
-    }
-
-    // 기본 템플릿 코드
-    const template = `/**
- * ${sketchName} — Arduino Sketch
- * Created: ${new Date().toISOString().split('T')[0]}
- */
-
-/**
- * ${vscode.l10n.t('Initial setup — Runs once when board powers on.')}
- */
-void setup() {
-  // ${vscode.l10n.t('Initialize serial communication (baud rate: 9600)')}
-  Serial.begin(9600);
-
-  // ${vscode.l10n.t('TODO: Set pin modes, write initialization code')}
-}
-
-/**
- * ${vscode.l10n.t('Main loop — Repeats indefinitely after setup().')}
- */
-void loop() {
-  // ${vscode.l10n.t('TODO: Write code to repeat')}
-}
-`;
-
-    try {
-        fs.writeFileSync(sketchFile, template, 'utf-8');
-
-        // 생성된 파일 열기
-        const doc = await vscode.workspace.openTextDocument(sketchFile);
-        await vscode.window.showTextDocument(doc);
-
-        vscode.window.showInformationMessage(
-            `✅ ${vscode.l10n.t('New sketch "{0}" created!', sketchName)}`
-        );
-    } catch (error) {
-        const message =
-            error instanceof Error ? error.message : vscode.l10n.t('Unknown error');
-        vscode.window.showErrorMessage(vscode.l10n.t('Failed to create sketch file: {0}', message));
-    }
+    // 명령어 등록 모듈 호출 (SRP 분리)
+    registerCommands(context, sidebarProvider);
 }
 
 /**

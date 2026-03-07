@@ -135,13 +135,26 @@ export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
+        }
+        
+        .status-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
         }
 
         .status-row {
             display: flex;
             flex-direction: column;
             gap: 4px;
+            transition: opacity 0.2s ease;
+        }
+        
+        .status-row:hover {
+            opacity: 0.8;
         }
 
         .status-label {
@@ -211,7 +224,7 @@ export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
             height: 100%;
             background: var(--arduino-teal);
             width: 0%;
-            transition: width 0.5s ease-out, background-color 0.3s ease;
+            transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.4s ease;
         }
 
         /* Action Buttons */
@@ -243,27 +256,34 @@ export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
             gap: 8px;
             font-size: 12px;
             font-family: inherit;
-            transition: all 0.2s ease;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
         .btn:hover {
             background: var(--bg-glass-hover);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
         .btn:active {
-            transform: translateY(1px);
+            transform: translateY(0) scale(0.97);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .btn.primary {
-            background: var(--arduino-teal);
+            background: linear-gradient(135deg, var(--arduino-teal), #007a7e);
             color: white;
-            border: none;
+            border: 1px solid rgba(0, 151, 156, 0.4);
         }
 
         .btn.primary:hover {
-            background: var(--arduino-teal-hover);
-            box-shadow: 0 4px 12px rgba(0, 151, 156, 0.3);
+            background: linear-gradient(135deg, var(--arduino-teal-hover), #00686b);
+            box-shadow: 0 6px 18px rgba(0, 151, 156, 0.4);
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
         .btn svg {
