@@ -8,3 +8,8 @@ esbuild.js
 .gitignore
 .env*
 error*.txt
+test_sketch/**
+test*.ino
+test*.js
+out*.txt
+vsce_output.txt
