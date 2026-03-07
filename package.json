@@ -2,7 +2,7 @@
     "name": "arduino-helper",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "0.6.10",
+    "version": "0.6.11",
     "publisher": "minseokk7",
     "repository": {
         "type": "git",
@@ -188,8 +188,7 @@
                 ],
                 "extensions": [
                     ".ino"
-                ],
-                "configuration": "./language-configuration.json"
+                ]
             }
         ]
     },
