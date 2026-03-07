@@ -2,7 +2,7 @@
     "name": "arduino-helper",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "0.6.15",
+    "version": "0.6.16",
     "publisher": "minseokk7",
     "repository": {
         "type": "git",
@@ -194,7 +194,7 @@
         "grammars": [
             {
                 "language": "arduino",
-                "scopeName": "source.cpp",
+                "scopeName": "source.arduino",
                 "path": "./syntaxes/arduino.tmLanguage.json"
             }
         ],
