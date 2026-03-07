@@ -2,7 +2,7 @@
     "name": "arduino-helper",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "0.6.12",
+    "version": "0.6.13",
     "publisher": "minseokk7",
     "repository": {
         "type": "git",
@@ -29,10 +29,6 @@
             },
             {
                 "language": "c",
-                "path": "./snippets/arduino.json"
-            },
-            {
-                "language": "arduino",
                 "path": "./snippets/arduino.json"
             }
         ],
@@ -178,7 +174,15 @@
                     "description": "%config.serialHexView.description%"
                 }
             }
-        }
+        },
+        "languages": [
+            {
+                "id": "cpp",
+                "extensions": [
+                    ".ino"
+                ]
+            }
+        ]
     },
     "scripts": {
         "compile": "node esbuild.js",
