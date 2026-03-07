@@ -140,8 +140,8 @@ export async function compile(): Promise<boolean> {
                     outputChannel.appendLine(`✅ ${vscode.l10n.t('Compile successful!')}`);
 
                     // 메모리 파싱 (예: "Sketch uses 444 bytes (1%) of program storage space. Maximum is 32256 bytes.")
-                    const flashRegex = /uses\s+(\d+)\s+bytes.*?(\d+)%.*?Maximum\s+is\s+(\d+)\s+bytes/i;
-                    const ramRegex = /use\s+(\d+)\s+bytes.*?(\d+)%.*?Maximum\s+is\s+(\d+)\s+bytes/i;
+                    const flashRegex = /(?:Sketch|스케치).*?(\d+).*?\((\d+)%\).*?(?:Maximum|최대).*?(\d+)/i;
+                    const ramRegex = /(?:Global variables|전역 변수).*?(\d+).*?\((\d+)%\).*?(?:Maximum|최대).*?(\d+)/i;
 
                     const flashMatch = result.stdout.match(flashRegex);
                     const ramMatch = result.stdout.match(ramRegex);
