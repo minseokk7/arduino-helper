@@ -159,6 +159,9 @@ export async function compile(): Promise<boolean> {
                             ramMax: parseInt(ramMatch[3], 10)
                         };
                         onDidCompile.fire(lastCompileMemory);
+                    } else if (lastCompileMemory) {
+                        // 만약 출력은 없지만(캐시된 빌드 등) 이전 메모리 기록이 있다면 그것을 유지하고 다시 쏴줍니다.
+                        onDidCompile.fire(lastCompileMemory);
                     } else {
                         // 파싱 실패 또는 출력 형식이 다를 경우
                         lastCompileMemory = undefined;
