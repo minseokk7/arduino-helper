@@ -2,7 +2,7 @@
     "name": "arduino-helper",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "0.6.13",
+    "version": "0.6.14",
     "publisher": "minseokk7",
     "repository": {
         "type": "git",
@@ -17,7 +17,8 @@
         "Other"
     ],
     "activationEvents": [
-        "workspaceContains:**/*.ino"
+        "workspaceContains:**/*.ino",
+        "onLanguage:cpp"
     ],
     "main": "./dist/extension.js",
     "icon": "resources/icon.png",
@@ -175,14 +176,11 @@
                 }
             }
         },
-        "languages": [
-            {
-                "id": "cpp",
-                "extensions": [
-                    ".ino"
-                ]
+        "configurationDefaults": {
+            "files.associations": {
+                "*.ino": "cpp"
             }
-        ]
+        }
     },
     "scripts": {
         "compile": "node esbuild.js",
