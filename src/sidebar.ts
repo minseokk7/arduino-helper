@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { getState } from './config';
-import { onDidCompile, lastCompileMemory } from './compiler';
+import { onDidCompile, getLastCompileMemory } from './compiler';
 
 export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
@@ -73,10 +73,11 @@ export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
             noPortText: vscode.l10n.t('No Port Selected')
         });
 
-        if (lastCompileMemory) {
+        const mem = getLastCompileMemory();
+        if (mem) {
             this._view.webview.postMessage({
                 command: 'updateMemory',
-                memory: lastCompileMemory
+                memory: mem
             });
         }
     }

@@ -17,6 +17,10 @@ export let lastCompileMemory: {
     ramCurrent: number; ramMax: number;
 } | undefined = undefined;
 
+export function getLastCompileMemory() {
+    return lastCompileMemory;
+}
+
 /** 메모리 사용량 파싱 결과 방출을 위한 이벤트 */
 export const onDidCompile = new vscode.EventEmitter<{
     flashCurrent: number; flashMax: number;
@@ -175,6 +179,7 @@ export async function compile(): Promise<boolean> {
                 } else {
                     outputChannel.appendLine('─'.repeat(60));
                     outputChannel.appendLine(`❌ ${vscode.l10n.t('Compile failed')}`);
+                    lastCompileMemory = undefined;
                     onDidCompile.fire(undefined);
 
                     // 에러 파싱 및 Diagnostics 등록
