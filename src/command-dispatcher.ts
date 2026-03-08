@@ -11,6 +11,7 @@ import { openSerialPlotter } from './webviews/serial-plotter';
 import { openManagerGUI } from './webviews/manager-gui';
 import { generateDebugConfig } from './debugger';
 import { setSketchLocation, newSketch } from './sketch-manager';
+import { createClangFormat } from './formatter';
 
 /**
  * 모든 확장 명령어를 등록합니다.

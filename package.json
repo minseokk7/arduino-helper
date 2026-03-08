@@ -2,7 +2,7 @@
     "name": "arduino-helper",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "0.6.16",
+    "version": "0.7.0",
     "publisher": "minseokk7",
     "repository": {
         "type": "git",
@@ -108,6 +108,11 @@
             {
                 "command": "arduino.setSketchLocation",
                 "title": "%command.setSketchLocation%",
+                "category": "Arduino"
+            },
+            {
+                "command": "arduino.createClangFormat",
+                "title": "Arduino: Generate .clang-format",
                 "category": "Arduino"
             }
         ],

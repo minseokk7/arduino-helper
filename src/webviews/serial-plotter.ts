@@ -32,6 +32,34 @@ export function openSerialPlotter(context: vscode.ExtensionContext): void {
         context.subscriptions
     );
 
+    currentPanel.webview.onDidReceiveMessage(
+        async (message) => {
+            switch (message.command) {
+                case 'exportCsv':
+                    const uri = await vscode.window.showSaveDialog({
+                        saveLabel: vscode.l10n.t('Export CSV'),
+                        filters: {
+                            'CSV Files': ['csv'],
+                            'All Files': ['*']
+                        },
+                        defaultUri: vscode.Uri.file('arduino_plotter_data.csv')
+                    });
+
+                    if (uri) {
+                        try {
+                            await vscode.workspace.fs.writeFile(uri, Buffer.from(message.data, 'utf8'));
+                            vscode.window.showInformationMessage(vscode.l10n.t('Plotter data exported successfully!'));
+                        } catch (e) {
+                            vscode.window.showErrorMessage(vscode.l10n.t('Failed to export plotter data.'));
+                        }
+                    }
+                    return;
+            }
+        },
+        undefined,
+        context.subscriptions
+    );
+
     currentPanel.webview.html = getWebviewContent();
 }
 
@@ -70,6 +98,7 @@ function getWebviewContent(): string {
     <div class="controls">
         <button id="pauseBtn">Pause</button>
         <button id="clearBtn">Clear</button>
+        <button id="exportBtn">Export CSV</button>
         <label><input type="checkbox" id="autoScale" checked> Auto Scale Y</label>
         <span style="margin-left:auto; font-size:12px; opacity:0.7;">Send comma-separated numbers (e.g., 10,20,-5) per line</span>
     </div>
@@ -82,7 +111,7 @@ function getWebviewContent(): string {
         const vscode = acquireVsCodeApi();
         
         // 차트 최대 표시 데이터 개수 제한
-        const MAX_DATA_POINTS = 100;
+        const MAX_DATA_POINTS = 500;
         let isPaused = false;
         let dataBuffer = '';
 
@@ -132,10 +161,39 @@ function getWebviewContent(): string {
             plotChart.update();
         });
 
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            if (plotChart.data.datasets.length === 0 || plotChart.data.datasets[0].data.length === 0) {
+                return;
+            }
+            
+            let csvContent = "Time";
+            for (let i = 0; i < plotChart.data.datasets.length; i++) {
+                csvContent += "," + plotChart.data.datasets[i].label;
+            }
+            csvContent += "\\n";
+
+            const dataLength = plotChart.data.datasets[0].data.length;
+            for (let i = 0; i < dataLength; i++) {
+                csvContent += i;
+                for (let j = 0; j < plotChart.data.datasets.length; j++) {
+                    csvContent += "," + plotChart.data.datasets[j].data[i];
+                }
+                csvContent += "\\n";
+            }
+
+            vscode.postMessage({ command: 'exportCsv', data: csvContent });
+        });
+
+        const yAxis = plotChart.options.scales.y;
         document.getElementById('autoScale').addEventListener('change', (e) => {
             if (!e.target.checked) {
-                // 수동 모드로 고정할 경우, 현재 데이터 최소/최대로 고정하는 버튼 추가 가능 (추후 확장을 고려)
+                yAxis.min = plotChart.scales.y.min;
+                yAxis.max = plotChart.scales.y.max;
+            } else {
+                delete yAxis.min;
+                delete yAxis.max;
             }
+            plotChart.update();
         });
 
         // 줄 단위 파싱 및 차트 적용

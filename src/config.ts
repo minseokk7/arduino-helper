@@ -82,56 +82,35 @@ export function updateState(updates: Partial<ArduinoState>): void {
     saveWorkspaceState();
 }
 
+let extensionContext: vscode.ExtensionContext | undefined;
+
 /**
- * 워크스페이스에서 로컬 설정(.vscode/arduino-helper.json)을 로드합니다.
+ * 워크스페이스 상태를 초기화하고 저장된 값을 불러옵니다.
+ * @param context 확장 컨텍스트
  */
-export function loadWorkspaceState(): void {
-    const workspaceFolders = vscode.workspace.workspaceFolders;
-    if (!workspaceFolders || workspaceFolders.length === 0) {
-        return;
-    }
-
-    const vscodeDir = path.join(workspaceFolders[0].uri.fsPath, '.vscode');
-    const settingsFile = path.join(vscodeDir, 'arduino-helper.json');
-
-    if (fs.existsSync(settingsFile)) {
-        try {
-            const data = fs.readFileSync(settingsFile, 'utf8');
-            const parsed = JSON.parse(data) as Partial<ArduinoState>;
-            Object.assign(state, parsed);
-        } catch (e) {
-            console.error('Failed to parse workspace arduino-helper.json:', e);
-        }
+export function initWorkspaceState(context: vscode.ExtensionContext): void {
+    extensionContext = context;
+    const savedState = context.workspaceState.get<Partial<ArduinoState>>('arduinoHelperState');
+    if (savedState) {
+        Object.assign(state, savedState);
     }
 }
 
 /**
- * 현재 상태를 로컬 설정(.vscode/arduino-helper.json)에 저장합니다.
+ * 현재 상태를 로컬 설정(workspaceState)에 저장합니다.
  */
 export function saveWorkspaceState(): void {
-    const workspaceFolders = vscode.workspace.workspaceFolders;
-    if (!workspaceFolders || workspaceFolders.length === 0) {
+    if (!extensionContext) {
         return;
     }
 
-    const vscodeDir = path.join(workspaceFolders[0].uri.fsPath, '.vscode');
-    const settingsFile = path.join(vscodeDir, 'arduino-helper.json');
+    // 민감하지 않은 정보만 저장
+    const stateToSave = {
+        selectedFqbn: state.selectedFqbn,
+        selectedPort: state.selectedPort,
+        selectedBoardName: state.selectedBoardName,
+        defaultSketchPath: state.defaultSketchPath
+    };
 
-    try {
-        if (!fs.existsSync(vscodeDir)) {
-            fs.mkdirSync(vscodeDir, { recursive: true });
-        }
-
-        // 민감하지 않은 정보만 저장
-        const stateToSave = {
-            selectedFqbn: state.selectedFqbn,
-            selectedPort: state.selectedPort,
-            selectedBoardName: state.selectedBoardName,
-            defaultSketchPath: state.defaultSketchPath
-        };
-
-        fs.writeFileSync(settingsFile, JSON.stringify(stateToSave, null, 4), 'utf8');
-    } catch (e) {
-        console.error('Failed to save workspace arduino-helper.json:', e);
-    }
+    extensionContext.workspaceState.update('arduinoHelperState', stateToSave);
 }

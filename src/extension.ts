@@ -8,7 +8,7 @@ import { checkCliInstalled } from './arduino-cli';
 import { initCompiler } from './compiler';
 import { closeSerialMonitor } from './serial-monitor';
 import { initStatusBar } from './status-bar';
-import { updateState, loadWorkspaceState } from './config';
+import { updateState, initWorkspaceState } from './config';
 import { ArduinoSidebarProvider } from './sidebar';
 import { installCliIfNeeded } from './auto-download';
 import { ArduinoTaskProvider } from './task-provider';
@@ -47,7 +47,7 @@ export async function activate(
     }
 
     // 작업 공간 설정 로딩
-    loadWorkspaceState();
+    initWorkspaceState(context);
 
     // 설정: 자동 업데이트 체크
     const config = vscode.workspace.getConfiguration('arduino');
