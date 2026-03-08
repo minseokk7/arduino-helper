@@ -33,6 +33,16 @@ Arduino CLI-based VS Code extension — compile, upload, serial monitor, and boa
 
 - [arduino-cli](https://arduino.github.io/arduino-cli/latest/installation/) installed and added to PATH
 
+### Shortcuts
+
+| Command | Windows / Linux | macOS |
+|---------|-----------------|-------|
+| **Compile Sketch** | \`Ctrl+Alt+C\` | \`Cmd+Alt+C\` |
+| **Upload Sketch** | \`Ctrl+Alt+U\` | \`Cmd+Alt+U\` |
+| **Serial Monitor** | \`Ctrl+Alt+M\` | \`Cmd+Alt+M\` |
+| **Generate .clang-format** | \`Ctrl+Alt+F\` | \`Cmd+Alt+F\` |
+| **Build Task (Default)** | \`Ctrl+Shift+B\` | \`Cmd+Shift+B\` |
+
 ### Settings
 
 | Setting | Default | Description |
@@ -73,6 +83,16 @@ Arduino CLI 기반 VS Code 확장 — 컴파일, 업로드, 시리얼 모니터,
 ### 사전 요구 사항
 
 - [arduino-cli](https://arduino.github.io/arduino-cli/latest/installation/) 설치 및 PATH 등록
+
+### 단축키
+
+| 명령어 | Windows / Linux | macOS |
+|--------|-----------------|-------|
+| **스케치 컴파일 (Compile)** | \`Ctrl+Alt+C\` | \`Cmd+Alt+C\` |
+| **스케치 업로드 (Upload)** | \`Ctrl+Alt+U\` | \`Cmd+Alt+U\` |
+| **시리얼 모니터 열기** | \`Ctrl+Alt+M\` | \`Cmd+Alt+M\` |
+| **.clang-format 파일 생성** | \`Ctrl+Alt+F\` | \`Cmd+Alt+F\` |
+| **기본 빌드 태스크 연동** | \`Ctrl+Shift+B\` | \`Cmd+Shift+B\` |
 
 ### 설정
 

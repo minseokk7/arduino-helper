@@ -2,7 +2,7 @@
     "name": "arduino-helper",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "0.7.1",
+    "version": "0.7.2",
     "publisher": "minseokk7",
     "repository": {
         "type": "git",
@@ -201,6 +201,31 @@
                 "language": "arduino",
                 "scopeName": "source.arduino",
                 "path": "./syntaxes/arduino.tmLanguage.json"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "arduino.compile",
+                "key": "ctrl+alt+c",
+                "mac": "cmd+alt+c",
+                "when": "editorLangId == arduino || editorLangId == cpp"
+            },
+            {
+                "command": "arduino.upload",
+                "key": "ctrl+alt+u",
+                "mac": "cmd+alt+u",
+                "when": "editorLangId == arduino || editorLangId == cpp"
+            },
+            {
+                "command": "arduino.serialMonitor",
+                "key": "ctrl+alt+m",
+                "mac": "cmd+alt+m"
+            },
+            {
+                "command": "arduino.createClangFormat",
+                "key": "ctrl+alt+f",
+                "mac": "cmd+alt+f",
+                "when": "editorLangId == arduino || editorLangId == cpp"
             }
         ],
         "configurationDefaults": {
