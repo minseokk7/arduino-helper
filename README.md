@@ -17,7 +17,8 @@ Arduino CLI-based VS Code extension — compile, upload, serial monitor, and boa
 - **Port Selection** — Pick connected COM ports (auto-detects USB boards)
 - **Compile & Upload** — Integrated `Ctrl+Shift+B` TaskProvider support
 - **Serial Monitor** — Interactive serial monitor in the terminal
-- **Serial Plotter (GUI)** — Visualize real-time telemetry data with Chart.js
+- **Serial Plotter (GUI)** — Visualize real-time telemetry data with Chart.js (supports CSV Export)
+- **Auto-Formatting** — Generate standard Arduino `.clang-format` to format `.ino` files beautifully
 - **Manager GUI (Webview)** — Visually search and install boards and libraries
 - **Webview Dashboard** — Rich graphical sidebar interface
 - **Memory Inspector** — Real-time Flash & RAM usage bars after compilation
@@ -57,7 +58,8 @@ Arduino CLI 기반 VS Code 확장 — 컴파일, 업로드, 시리얼 모니터,
 - **보드 & 포트 선택** — 설치된 플러그인에서 보드 선택 및 연결된 USB 자동 감지
 - **컴파일 및 업로드** — `Ctrl+Shift+B` 빌드 단축키(Task 연동)를 통한 빠른 컴파일/업로드
 - **시리얼 모니터** — 가상 터미널 환경에서 입출력이 가능한 시리얼 통신
-- **시리얼 플로터 (GUI)** — 센서 출력 데이터를 실시간 다중 채널 그래프(Chart.js)로 시각화
+- **시리얼 플로터 (GUI)** — 센서 출력 데이터를 다중 채널 그래프(Chart.js)로 시각화 및 **CSV 내보내기** 지원
+- **자동 포맷팅 (Auto-Format)** — 아두이노 표준 `.clang-format` 파일을 생성하여 `.ino` 코드를 예쁘게 정렬
 - **매니저 대시보드 (Webview)** — 라이브러리 및 보드 코어를 시각적인 화면에서 검색/설치
 - **웹뷰 대시보드 사이드바** — 시각적이고 풍부한 인터페이스 제공
 - **메모리 사용량 검사기** — 컴파일 완료 후 실시간 Flash 및 RAM 점유율 프로그레스 바 표시
