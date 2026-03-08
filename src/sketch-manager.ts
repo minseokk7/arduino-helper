@@ -48,19 +48,37 @@ export async function newSketch(): Promise<void> {
     const state = getState();
     let selectedPath: string | undefined = state.defaultSketchPath;
 
-    // 저장된 위치가 없다면 새로 물어봄
+    // 저장된 위치가 없다면 현재 열려있는 워크스페이스를 기본값으로 사용
     if (!selectedPath) {
-        const targetFolder = await vscode.window.showOpenDialog({
-            canSelectFiles: false,
-            canSelectFolders: true,
-            canSelectMany: false,
-            openLabel: vscode.l10n.t('Select sketch creation location'),
-        });
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (workspaceFolders && workspaceFolders.length > 0) {
+            selectedPath = workspaceFolders[0].uri.fsPath;
+        } else {
+            const targetFolder = await vscode.window.showOpenDialog({
+                canSelectFiles: false,
+                canSelectFolders: true,
+                canSelectMany: false,
+                openLabel: vscode.l10n.t('Select sketch creation location'),
+            });
 
-        if (!targetFolder || targetFolder.length === 0) {
-            return;
+            if (!targetFolder || targetFolder.length === 0) {
+                return;
+            }
+            selectedPath = targetFolder[0].fsPath;
         }
-        selectedPath = targetFolder[0].fsPath;
+    }
+
+    // [버그 수정] 사용자가 선택한 경로가 "이미 존재하는 스케치 폴더" 내부라면,
+    // 스케치를 중첩 생성하지 않고 부모 폴더(상위 폴더)로 위치를 자동 조정합니다.
+    let detectPath = selectedPath;
+    while (detectPath && detectPath !== path.dirname(detectPath)) {
+        const dirName = path.basename(detectPath);
+        if (fs.existsSync(path.join(detectPath, `${dirName}.ino`))) {
+            // 선택된 경로가 스케치 폴더임. 해당 스케치 폴더와 같은 레벨에 생성.
+            selectedPath = path.dirname(detectPath);
+            break;
+        }
+        detectPath = path.dirname(detectPath);
     }
 
     // Arduino 스타일: 폴더명과 .ino 파일명이 같아야 함.
