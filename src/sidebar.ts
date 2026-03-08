@@ -96,7 +96,8 @@ export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
         const lblManagerDesc = vscode.l10n.t('Arduino Manager (Libraries / Boards)');
         const lblCheckUpdates = vscode.l10n.t('Check for Updates');
         const lblBrowseExamples = vscode.l10n.t('Browse Examples');
-        const lblNewSketch = vscode.l10n.t('New Sketch');
+        const lblNewSketch = vscode.l10n.t('New Sketch (Folder)');
+        const lblAddSketchFile = vscode.l10n.t('Add File to Sketch');
         const tltCompile = vscode.l10n.t('Verify/Compile Sketch');
         const tltUpload = vscode.l10n.t('Upload to Board');
         const tltSerial = vscode.l10n.t('Open Serial Monitor');
@@ -392,6 +393,10 @@ export class ArduinoSidebarProvider implements vscode.WebviewViewProvider {
         <button class="btn full-width" onclick="execute('arduino.newSketch')" style="justify-content: center;">
             <svg viewBox="0 0 16 16" style="margin-right: 4px;"><path d="M8 2v12m-6-6h12" stroke="currentColor" stroke-width="1.5"/></svg>
             ${lblNewSketch}
+        </button>
+        <button class="btn full-width" onclick="execute('arduino.addSketchFile')" style="justify-content: center;">
+            <svg viewBox="0 0 16 16" style="margin-right: 4px;"><path d="M8 2v12m-6-6h12" stroke="currentColor" stroke-width="1.5"/><path d="M4 14V2h5.5l3.5 3.5V14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zm6-11v3h3z" fill="none" stroke="currentColor"/></svg>
+            ${lblAddSketchFile}
         </button>
     </div>
 

@@ -147,3 +147,79 @@ void loop() {
         vscode.window.showErrorMessage(vscode.l10n.t('Failed to create sketch file: {0}', message));
     }
 }
+
+/**
+ * 활성 작업 영역(또는 현재 활성화된 스케치 폴더) 내부에
+ * 새 폴더를 만들지 않고 .ino 파일을 직접 추가합니다.
+ */
+export async function addSketchFile(): Promise<void> {
+    const fileName = await vscode.window.showInputBox({
+        prompt: vscode.l10n.t('Enter new sketch file name (without .ino)'),
+        placeHolder: vscode.l10n.t('e.g.: Helpers, Definitions'),
+        validateInput: (value) => {
+            if (!value) {
+                return vscode.l10n.t('Please enter a file name');
+            }
+            if (!/^[a-zA-Z][a-zA-Z0-9_]*$/.test(value)) {
+                return vscode.l10n.t('Only letters, numbers, underscores allowed (must start with a letter)');
+            }
+            return null;
+        },
+    });
+
+    if (!fileName) {
+        return;
+    }
+
+    let targetPath: string | undefined = undefined;
+
+    // 현재 열려있는 파일의 디렉토리를 우선 확인
+    if (vscode.window.activeTextEditor) {
+        targetPath = path.dirname(vscode.window.activeTextEditor.document.uri.fsPath);
+    } else {
+        // 열린 파일이 없으면 첫 번째 워크스페이스 사용
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (workspaceFolders && workspaceFolders.length > 0) {
+            targetPath = workspaceFolders[0].uri.fsPath;
+        }
+    }
+
+    if (!targetPath) {
+        vscode.window.showErrorMessage(vscode.l10n.t('Please open an Arduino project folder first to add a file.'));
+        return;
+    }
+
+    const filePath = path.join(targetPath, `${fileName}.ino`);
+
+    if (fs.existsSync(filePath)) {
+        vscode.window.showErrorMessage(
+            vscode.l10n.t('A file with this name already exists: {0}', filePath)
+        );
+        return;
+    }
+
+    const template = `/**
+ * ${fileName}.ino
+ * Created: ${new Date().toISOString().split('T')[0]}
+ */
+
+// ${vscode.l10n.t('Add your helper functions or additional sketch code here.')}
+`;
+
+    try {
+        fs.writeFileSync(filePath, template, 'utf-8');
+
+        // 생성된 파일 열기
+        const doc = await vscode.workspace.openTextDocument(filePath);
+        await vscode.window.showTextDocument(doc);
+        
+        vscode.window.showInformationMessage(
+            `✅ ${vscode.l10n.t('Added file "{0}.ino" to current sketch!', fileName)}`
+        );
+    } catch (error) {
+        const message =
+            error instanceof Error ? error.message : vscode.l10n.t('Unknown error');
+        vscode.window.showErrorMessage(vscode.l10n.t('Failed to create file: {0}', message));
+    }
+}
+

@@ -2,7 +2,7 @@
     "name": "arduino-helper",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "0.7.4",
+    "version": "0.7.5",
     "publisher": "minseokk7",
     "repository": {
         "type": "git",
@@ -81,6 +81,10 @@
             {
                 "command": "arduino.newSketch",
                 "title": "%command.newSketch%"
+            },
+            {
+                "command": "arduino.addSketchFile",
+                "title": "%command.addSketchFile%"
             },
             {
                 "command": "arduino.installCore",
@@ -225,6 +229,12 @@
                 "command": "arduino.createClangFormat",
                 "key": "ctrl+alt+f",
                 "mac": "cmd+alt+f",
+                "when": "editorLangId == arduino || editorLangId == cpp"
+            },
+            {
+                "command": "arduino.addSketchFile",
+                "key": "ctrl+alt+n",
+                "mac": "cmd+alt+n",
                 "when": "editorLangId == arduino || editorLangId == cpp"
             }
         ],

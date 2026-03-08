@@ -10,7 +10,7 @@ import { openExample } from './examples-manager';
 import { openSerialPlotter } from './webviews/serial-plotter';
 import { openManagerGUI } from './webviews/manager-gui';
 import { generateDebugConfig } from './debugger';
-import { setSketchLocation, newSketch } from './sketch-manager';
+import { setSketchLocation, newSketch, addSketchFile } from './sketch-manager';
 import { createClangFormat } from './formatter';
 
 /**
@@ -79,6 +79,10 @@ export function registerCommands(
         {
             id: 'arduino.newSketch',
             handler: newSketch,
+        },
+        {
+            id: 'arduino.addSketchFile',
+            handler: addSketchFile,
         },
         {
             id: 'arduino.installCore',
