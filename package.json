@@ -1,0 +1,209 @@
+{
+    "name": "arduino-helper",
+    "displayName": "%displayName%",
+    "description": "%description%",
+    "version": "0.7.6",
+    "publisher": "minseokk7",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/minseokk7/arduino-helper"
+    },
+    "engines": {
+        "vscode": "^1.85.0"
+    },
+    "l10n": "./l10n",
+    "categories": [
+        "Programming Languages",
+        "Other"
+    ],
+    "activationEvents": [
+        "workspaceContains:**/*.ino"
+    ],
+    "main": "./dist/extension.js",
+    "icon": "resources/icon.png",
+    "contributes": {
+        "snippets": [
+            {
+                "language": "cpp",
+                "path": "./snippets/arduino.json"
+            },
+            {
+                "language": "c",
+                "path": "./snippets/arduino.json"
+            },
+            {
+                "language": "arduino",
+                "path": "./snippets/arduino.json"
+            }
+        ],
+        "commands": [
+            {
+                "command": "arduino.selectBoard",
+                "title": "%command.selectBoard%"
+            },
+            {
+                "command": "arduino.compile",
+                "title": "%command.compile%",
+                "icon": "$(check)"
+            },
+            {
+                "command": "arduino.upload",
+                "title": "%command.upload%",
+                "icon": "$(arrow-right)"
+            },
+            {
+                "command": "arduino.serialMonitor",
+                "title": "%command.serialMonitor%"
+            },
+            {
+                "command": "arduino.serialPlotter",
+                "title": "%command.serialPlotter%",
+                "icon": "$(graph)"
+            },
+            {
+                "command": "arduino.managerGUI",
+                "title": "%command.managerGUI%",
+                "icon": "$(extensions)"
+            },
+            {
+                "command": "arduino.sendToSerial",
+                "title": "%command.sendToSerial%"
+            },
+            {
+                "command": "arduino.generateDebugConfig",
+                "title": "%command.generateDebugConfig%",
+                "icon": "$(debug-alt)"
+            },
+            {
+                "command": "arduino.installLibrary",
+                "title": "%command.installLibrary%"
+            },
+            {
+                "command": "arduino.newSketch",
+                "title": "%command.newSketch%"
+            },
+            {
+                "command": "arduino.installCore",
+                "title": "%command.installCore%"
+            },
+            {
+                "command": "arduino.autoDetect",
+                "title": "%command.autoDetect%",
+                "icon": "$(zap)"
+            },
+            {
+                "command": "arduino.openExample",
+                "title": "%command.openExample%",
+                "icon": "$(file-code)"
+            },
+            {
+                "command": "arduino.updateAll",
+                "title": "%command.updateAll%"
+            },
+            {
+                "command": "arduino.exportSerialLog",
+                "title": "%command.exportSerialLog%",
+                "icon": "$(save)"
+            }
+        ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "arduino-helper",
+                    "title": "Arduino Helper",
+                    "icon": "resources/arduino-icon.svg"
+                }
+            ]
+        },
+        "views": {
+            "arduino-helper": [
+                {
+                    "id": "arduino-sidebar",
+                    "name": "Arduino Dashboard",
+                    "type": "webview",
+                    "icon": "resources/arduino-icon.svg"
+                }
+            ]
+        },
+        "menus": {
+            "editor/title": [
+                {
+                    "command": "arduino.compile",
+                    "when": "resourceLangId == arduino",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "arduino.upload",
+                    "when": "resourceLangId == arduino",
+                    "group": "navigation@2"
+                }
+            ]
+        },
+        "configuration": {
+            "title": "Arduino Helper",
+            "properties": {
+                "arduino.cliPath": {
+                    "type": "string",
+                    "default": "arduino-cli",
+                    "description": "%config.cliPath.description%"
+                },
+                "arduino.defaultBaudRate": {
+                    "type": "number",
+                    "default": 9600,
+                    "description": "%config.defaultBaudRate.description%"
+                },
+                "arduino.autoDetectBoard": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "%config.autoDetectBoard.description%"
+                },
+                "arduino.autoUpdate": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "%config.autoUpdate.description%"
+                },
+                "arduino.serialTimestamps": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "%config.serialTimestamps.description%"
+                },
+                "arduino.serialHexView": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "%config.serialHexView.description%"
+                }
+            }
+        },
+        "languages": [
+            {
+                "id": "arduino",
+                "aliases": [
+                    "Arduino",
+                    "arduino"
+                ],
+                "extensions": [
+                    ".ino"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ]
+    },
+    "scripts": {
+        "compile": "node esbuild.js && tsc -p ./",
+        "watch": "node esbuild.js --watch",
+        "package": "npx @vscode/vsce package --no-dependencies",
+        "lint": "eslint src --ext ts",
+        "test": "npm run compile && node ./dist/test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/glob": "^8.1.0",
+        "@types/mocha": "^10.0.6",
+        "@types/node": "^20.0.0",
+        "@types/vscode": "^1.85.0",
+        "@vscode/test-electron": "^2.3.9",
+        "esbuild": "^0.24.0",
+        "glob": "^13.0.6",
+        "mocha": "^10.4.0",
+        "typescript": "^5.5.0"
+    }
+}

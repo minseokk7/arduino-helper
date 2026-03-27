@@ -1,0 +1,85 @@
+{
+    "Arduino Setup and Loop": {
+        "prefix": "setup",
+        "body": [
+            "void setup() {",
+            "\t$1",
+            "}",
+            "",
+            "void loop() {",
+            "\t$2",
+            "}"
+        ],
+        "description": "Standard Arduino setup() and loop() template"
+    },
+    "Serial Begin": {
+        "prefix": "serb",
+        "body": [
+            "Serial.begin(${1:9600});\n$0"
+        ],
+        "description": "Initialize Serial communication"
+    },
+    "Serial Print": {
+        "prefix": "serp",
+        "body": [
+            "Serial.print(${1:\"Message\"});\n$0"
+        ],
+        "description": "Serial.print() statement"
+    },
+    "Serial Println": {
+        "prefix": "serpl",
+        "body": [
+            "Serial.println(${1:\"Message\"});\n$0"
+        ],
+        "description": "Serial.println() statement"
+    },
+    "Pin Mode": {
+        "prefix": "pm",
+        "body": [
+            "pinMode(${1:pin}, ${2|INPUT,OUTPUT,INPUT_PULLUP|});\n$0"
+        ],
+        "description": "Configures a pin as input or output"
+    },
+    "Digital Write": {
+        "prefix": "dw",
+        "body": [
+            "digitalWrite(${1:pin}, ${2|HIGH,LOW|});\n$0"
+        ],
+        "description": "Write a HIGH or LOW value to a digital pin"
+    },
+    "Digital Read": {
+        "prefix": "dr",
+        "body": [
+            "digitalRead(${1:pin})"
+        ],
+        "description": "Reads the value from a specified digital pin"
+    },
+    "Analog Read": {
+        "prefix": "ar",
+        "body": [
+            "analogRead(${1:pin})"
+        ],
+        "description": "Reads the value from the specified analog pin"
+    },
+    "Analog Write": {
+        "prefix": "aw",
+        "body": [
+            "analogWrite(${1:pin}, ${2:value});\n$0"
+        ],
+        "description": "Writes an analog value (PWM wave) to a pin"
+    },
+    "Delay": {
+        "prefix": "dly",
+        "body": [
+            "delay(${1:1000});\n$0"
+        ],
+        "description": "Pauses the program for the amount of time (in milliseconds)"
+    },
+    "Millis": {
+        "prefix": "mil",
+        "body": [
+            "unsigned long ${1:currentMillis} = millis();\n$0"
+        ],
+        "description": "Returns the number of milliseconds passed since execution"
+    }
+}
